@@ -57,8 +57,18 @@ Additional Resources:
 1. Position
 2. Simulating movement with velocity
 3. Newtonian mechanics (forces and acceleration)
-4. Momentum, momentul transfer on collision
+4. Momentum, momentum transfer on collision
 
 Resources:
 - [Video course](https://www.youtube.com/playlist?list=PLbuK0gG93AsENAa67XysaOr5K0cczxye_)
 - [Collisions + Movement in p5.js](https://youtu.be/dJNFPv9Mj-Y)
+
+## Using a physics engine
+
+1. Unity physics functions
+2. Colliders
+
+## Gilbert Johnson Keerthi algorithm
+
+Resources:
+- [Video](https://youtu.be/ajv46BSqcK4)
