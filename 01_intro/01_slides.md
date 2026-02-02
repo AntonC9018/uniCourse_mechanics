@@ -22,7 +22,7 @@ Resources:
 - [3Blue1Brown course](https://www.3blue1brown.com/?v=vectors)
 - [3Blue1Brown на русском](https://www.youtube.com/playlist?list=PLVjLpKXnAGLXPaS7FRBjd5yZeXwJxZil2)
 
-## Discrete (cell/grid) 2D physics simulations
+## Grid 2D physics simulations
 
 1. Integer movement, turn-based mechanics
 2. Detecting collisions with walls, other objects
@@ -31,18 +31,45 @@ Resources:
 5. 2D raycasts
 6. Optimization techniques:
     - Uniform grid / spatial hash
-    - ...
     - Geometry separation (static, dynamic)
 
-## 2D Collisions
+## 2D Movement
 
-1. Defining a collision
-2. [Axis-aligned collision detection](https://www.jeffreythompson.org/collision-detection/index.php):
+1. Position
+2. Simulating movement with velocity
+4. What is a collision
+5. Momentum, momentum transfer on collision with walls
+6. Tunneling
+
+Resources:
+- [Video](https://www.youtube.com/watch?v=eED4bSkYCB8)
+- [Video course](https://www.youtube.com/playlist?list=PLbuK0gG93AsENAa67XysaOr5K0cczxye_)
+- [Collisions + Movement in p5.js](https://youtu.be/dJNFPv9Mj-Y)
+
+## Discrete 2D Physics Simulation
+
+1. Building a simulation with multiple objects
+2. Momentum transfer between objects
+3. Detecting collision between objects
+4. Optimization techniques:
+    - Uniform Grid
+    - Sweep and Prune algorithm
+    - KD trees and Quadtrees
+
+## Newtonian mechanics
+
+1. Forces and acceleration
+2. Simulating gravity
+3. Simulating non-elastic collisions
+
+## More 2D Collisions
+
+1. [Axis-aligned collision detection](https://www.jeffreythompson.org/collision-detection/index.php):
     - point
     - line
     - rectangle
     - circle
-3. Non-axis-aligned collision detection
+2. Non-axis-aligned collision detection
     - AABB (Axis-Aligned Bounding Box)
     - [Separating Axis Theorem](https://www.youtube.com/watch?v=Nm1Cgmbg5SQ&list=PLtrSb4XxIVbpZpV65kk73OoUcIrBzoSiO&index=11)
 
@@ -50,18 +77,6 @@ Additional Resources:
 - [Physics engine playlist](https://www.youtube.com/watch?v=vcgtwY39FT0&list=PLtrSb4XxIVbpZpV65kk73OoUcIrBzoSiO&index=1)
 - [Axis-aligned collision demo in JS](https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection)
 - [Intersection formulae](https://paulbourke.net/geometry/pointlineplane/)
-
-
-## 2D Movement
-
-1. Position
-2. Simulating movement with velocity
-3. Newtonian mechanics (forces and acceleration)
-4. Momentum, momentum transfer on collision
-
-Resources:
-- [Video course](https://www.youtube.com/playlist?list=PLbuK0gG93AsENAa67XysaOr5K0cczxye_)
-- [Collisions + Movement in p5.js](https://youtu.be/dJNFPv9Mj-Y)
 
 ## Using a physics engine
 
