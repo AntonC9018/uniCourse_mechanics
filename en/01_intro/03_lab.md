@@ -68,7 +68,7 @@
 #### Suppose an object is moving through space with some velocity. How would you go about communicating the fact that the velocity goes in a direction?
 
   <details>
-  <summary>Answer (decomposition)</summary>
+  <summary>Answer 1 (decomposition)</summary>
 
   Velocity can be decomposed into its **components**, and each component can be treated separately.
   In 2 dimensions, a velocity can be represented using an `x` component and a `y` component.
@@ -76,7 +76,27 @@
   For example, a velocity with components `x = 1` and `y = 3`, per second,
   means that the object will travel **by 1 unit of distance in `x`, and by 3 units of distance in `y` every second**.
 
-  ![velocity_decomposition](../../illustrations/01_vector_decomposition.gif)
+  ![velocity_decomposition](../../animations/01_vector_decomposition.gif)
+  </details>
+
+  <details>
+  <summary>Answer 2</summary>
+
+  The `x` and `y` components can be treated as a single velocity vector.
+  </details>
+
+  <details>
+  <summary>Answer 3</summary>
+
+  The following is a *very common idea* in games.
+
+  The velocity can be treated as a **direction** vector and a **speed** scalar.
+  **The direction vector has a length of 1 and when multiplied by the speed scalar gives the velocity vector.**
+
+  The point of direction being normalized (having length of 1) 
+  is **so that** it gives the velocity vector when multiplied by speed.
+
+  ![normalized_times_length](../../animations/01_normalized_times_length.gif)
   </details>
 
 - If you have a character that is **located at some point in space** 
