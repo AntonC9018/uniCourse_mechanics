@@ -75,6 +75,8 @@
 
   For example, a velocity with components `x = 1` and `y = 3`, per second,
   means that the object will travel **by 1 unit of distance in `x`, and by 3 units of distance in `y` every second**.
+
+  ![velocity_decomposition](../../illustrations/01_vector_decomposition.gif)
   </details>
 
 - If you have a character that is **located at some point in space** 
