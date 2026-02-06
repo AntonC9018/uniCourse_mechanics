@@ -15,11 +15,11 @@ headingDivider: 2
     - dot product (projection)
 3. Unit vectors, normalization
 4. 2D Rotations (special case of linear transformations)
-5. Line representation
-6. Linear interpolation
+5. Linear interpolation
+6. [Line parametrization](https://mathinsight.org/line_parametrization)
 
 Resources:
-- [3Blue1Brown course](https://www.3blue1brown.com/?v=vectors)
+- [3Blue1Brown course](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
 - [3Blue1Brown на русском](https://www.youtube.com/playlist?list=PLVjLpKXnAGLXPaS7FRBjd5yZeXwJxZil2)
 
 ## Grid 2D physics simulations
