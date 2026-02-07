@@ -1,5 +1,4 @@
 from manim import *
-from typing import cast
 from helper import set_default_output, create_component_animations_2d, setup_grid_and_camera
 
 class VelocityDecomposition(MovingCameraScene):
