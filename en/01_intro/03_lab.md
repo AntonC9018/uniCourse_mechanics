@@ -71,7 +71,7 @@
   <summary>Answer 1 (decomposition)</summary>
 
   Velocity can be decomposed into its **components**, and each component can be treated separately.
-  In 2 dimensions, a velocity can be represented using an `x` component and a `y` component.
+  In 2 dimensions, velocity can be represented using an `x` component and a `y` component.
 
   For example, a velocity with components `x = 1` and `y = 3`, per second,
   means that the object will travel **by 1 unit of distance in `x`, and by 3 units of distance in `y` every second**.
@@ -97,6 +97,17 @@
   is **so that** it gives the velocity vector when multiplied by speed.
 
   ![normalized_times_length](../../animations/01_normalized_times_length.gif)
+  </details>
+
+#### How to get the speed and the direction from a velocity vector?
+
+  <details>
+  <summary>Answer (speed)</summary>
+
+  The speed is just the **length** of the velocity vector.
+  It can be computed using pythagorean theorem, $` \left|\vec{v}\right| = \sqrt{x^2 + y^2} `$.
+
+  ![vector_length](../../animations/01_pythagorean_len.gif)
   </details>
 
 - If you have a character that is **located at some point in space** 

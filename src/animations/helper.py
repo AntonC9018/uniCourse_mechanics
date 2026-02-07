@@ -21,7 +21,6 @@ def _get_git_root():
 
 def set_default_output(name):
     config.output_file = get_output_path(name)
-    print(config.output_file)
     config.format = "gif"
     config.frame_height = 8
     config.frame_width = 8
@@ -35,10 +34,15 @@ def get_output_path(name):
     ret.parent.mkdir(parents=True, exist_ok=True)
     return str(ret) 
 
+
+from typing import Literal
+CoordName = Literal['x'] | Literal['y']
+
 class ComponentAnimation:
-    def __init__(self, label: MathTex, line: DashedLine):
+    def __init__(self, label: MathTex, line: DashedLine, coord: CoordName):
         self.label = label
         self.line = line
+        self.coord = coord
 
 class ComponentAnimations:
     def __init__(self, anims: list[ComponentAnimation]):
@@ -47,6 +51,22 @@ class ComponentAnimations:
     def play(self, scene: Scene):
         for x in self.anims:
             scene.play(Create(x.line), Write(x.label))
+
+    def find(self, coord: CoordName):
+        for c in self.anims:
+            if c.coord == coord:
+                return c
+        raise Exception("Should not happen")
+
+    def x(self) -> ComponentAnimation:
+        return self.find('x')
+
+    def y(self) -> ComponentAnimation:
+        return self.find('y')
+
+def has_one_decimal_or_less(n):
+    multiplied_n = n * 10
+    return math.isclose(multiplied_n, round(multiplied_n))
 
 def create_component_animations_2d(
         start_point: NDArray,
@@ -65,14 +85,14 @@ def create_component_animations_2d(
     second_line = DashedLine(corner_point, end_point, color=BLUE)
     lines = [first_line, second_line]
     ret: list[ComponentAnimation] = []
-    def add_label(label, direction):
+    def add_label(label, direction, coord):
         line = lines[len(ret)]
         label.next_to(line, direction)
-        ret.append(ComponentAnimation(label, line))
+        ret.append(ComponentAnimation(label, line, coord))
     def add_x():
-        add_label(x_label, x_direction)
+        add_label(x_label, x_direction, 'x')
     def add_y():
-        add_label(y_label, y_direction)
+        add_label(y_label, y_direction, 'y')
 
     if math.copysign(1, displacement_normalized[0]) == math.copysign(1, displacement_normalized[1]):
         y_direction = RIGHT
