@@ -187,7 +187,7 @@ def get_perpendicular_direction(vector: np.ndarray, prefer_up: bool = True) -> n
     return perp
 
 
-def get_vector_angle(vector: np.ndarray) -> float:
+def get_vector_angle_2d(vector: np.ndarray) -> float:
     """
     Get the angle of a vector in radians.
     
@@ -198,3 +198,8 @@ def get_vector_angle(vector: np.ndarray) -> float:
         Angle in radians
     """
     return np.arctan2(vector[1], vector[0])
+
+def get_vector_from_angle_2d(radians: float) -> np.ndarray:
+    ret = np.array([np.cos(radians), np.sin(radians)])
+    return ret
+

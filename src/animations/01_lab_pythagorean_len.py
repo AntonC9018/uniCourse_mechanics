@@ -1,156 +1,171 @@
 from manim import *
-from typing import cast
-from helper import get_perpendicular_direction, set_default_output, create_component_animations_2d, setup_grid_and_camera, has_one_decimal_or_less
-import numbers
+import helper
+import enemy_sight
 
-class VelocityDecomposition(MovingCameraScene):
+class DotProductDetection(Scene):
     def __init__(self, **kwargs):
-        set_default_output("01_pythagorean_len")
+        helper.set_default_output("01_lab_dot_product_explanation.gif")
         super().__init__(**kwargs)
 
     def construct(self):
-        velocities = [
-            np.array([3, 4, 0]),
-            np.array([-2, 3, 0]),
-            np.array([-3, -2, 0]),
-        ]
-        for v in velocities:
-            self.play_iter(v)
-
-    def play_iter(self, velocity):
-        start_pos = np.array([0, 0, 0])
-        end_pos = start_pos + velocity
-        grid = setup_grid_and_camera(
-            scene=self,
-            start_pos=start_pos,
-            end_pos=end_pos,
-            padding=2,
-            grid_padding=5)
-        self.add(grid)
-
-        start_point = grid.coords_to_point(*start_pos)
-        target_point = grid.coords_to_point(*end_pos)
-        velocity_vector = Arrow(
-            start=start_point, 
-            end=target_point, 
-            buff=0, 
-            color=RED, 
-            stroke_width=6
-        )
-        velocity_text = MathTex(r"\vec{v}", color=RED).scale(0.8)
-        perp_direction = get_perpendicular_direction(velocity)
-        velocity_text.add_updater(lambda x: x.next_to(velocity_vector.get_center(), perp_direction))
-
-        component_anims = create_component_animations_2d(start_point, target_point, end_pos)
-
-        vec_v_str = r"\left|\vec{v}\right|"
-        def get_formula_text(x, y):
-            def to_str(n):
-                s = n;
-                if isinstance(n, float):
-                    s = f"{n:.1}"
-                elif isinstance(n, int):
-                    s = f"{n}"
-                if isinstance(n, numbers.Number) and n < 0: # type: ignore
-                    s = f"({s})"
-                return s
-
-            x = to_str(x)
-            y = to_str(y)
-
-            ret = MathTex(vec_v_str, "=", r"\sqrt{", x, "^2", "+", y, "^2", "}", color=YELLOW)
-            # not searching, because it might be the same
-            ret[0].set_color(RED)
-            ret[3].set_color(BLUE) # x
-            ret[6].set_color(BLUE) # y
+        # Create context with all objects
+        ctx = enemy_sight.Context()
+        
+        # Add labels for enemy and player
+        enemy_label = MathTex("E", color=RED).next_to(ctx.enemy.obj)
+        player_label = MathTex("P", color=GREEN)
+        
+        def update_player_label(label):
+            label.next_to(ctx.player.obj)
+        player_label.add_updater(update_player_label)
+        
+        # Enemy look direction arrow (normalized) - using LabeledArrow
+        look_arrow = LabeledArrow(
+            start=ORIGIN,
+            end=UP * 2,
+            label_tex=r"\vec{d}",
+            color=BLUE)
+        
+        def update_look_direction(arrow):
+            enemy_dir = ctx.enemy.direction()
+            new_end = ORIGIN + 2 * enemy_dir
+            arrow.put_start_and_end_on(ORIGIN, new_end)
+        look_arrow.add_updater(update_look_direction)
+        
+        # Vector from enemy to player - using LabeledArrow
+        to_player_arrow = LabeledArrow(
+            start=ORIGIN,
+            end=ctx.player.obj.get_center(),
+            label_tex=r"\vec{v}",
+            color=YELLOW)
+        
+        def update_to_player_vec(arrow):
+            arrow.put_start_and_end_on(ORIGIN, ctx.player.obj.get_center())
+            arrow.set_color(YELLOW)
+        to_player_arrow.add_updater(update_to_player_vec)
+        
+        # Angle arc
+        angle_arc = Arc(
+            radius=0.8,
+            start_angle=np.pi/2,
+            angle=0,
+            color=WHITE,
+            stroke_width=3)
+        angle_label = MathTex(r"\alpha", color=WHITE).scale(0.8)
+        
+        def update_angle_arc(arc):
+            enemy_dir = ctx.enemy.direction()
+            player_pos = ctx.player.obj.get_center()
+            
+            if np.linalg.norm(player_pos) > 0.01:
+                player_dir = player_pos / np.linalg.norm(player_pos)
+                
+                # Calculate angles
+                enemy_angle = helper.get_vector_angle_2d(enemy_dir)
+                player_angle = helper.get_vector_angle_2d(player_dir)
+                # Fix: angle should go from player to enemy (clockwise)
+                angle_between = enemy_angle - player_angle
+                
+                arc.become(Arc(
+                    radius=0.8,
+                    start_angle=player_angle,
+                    angle=angle_between,
+                    color=WHITE,
+                    stroke_width=3))
+        angle_arc.add_updater(update_angle_arc)
+        
+        def update_angle_label(label):
+            enemy_dir = ctx.enemy.direction()
+            player_pos = ctx.player.obj.get_center()
+            
+            if np.linalg.norm(player_pos) > 0.01:
+                player_dir = player_pos / np.linalg.norm(player_pos)
+                mid_dir = (enemy_dir + player_dir) / 2
+                if np.linalg.norm(mid_dir) > 0.01:
+                    mid_dir = mid_dir / np.linalg.norm(mid_dir)
+                    label.move_to(0.5 * mid_dir)
+        angle_label.add_updater(update_angle_label)
+        
+        # Formula display
+        def create_formula(tex):
+            ret = MathTex(tex)
+            ret.to_edge(DOWN).shift(UP * 0.5)
             return ret
 
-        camera = cast(MovingCamera, self.camera)
-        f = camera.frame
-
-        formula_text_1 = get_formula_text('x', 'y')
-        formula_text_1.next_to(f.get_top(), DOWN, buff=0.2)
-
-        formulas = FormulasHelper(formula_text_1)
-        formula_text_2 = get_formula_text(end_pos[0], 'y') 
-        formulas.add(formula_text_2)
-        formulas.add(get_formula_text(end_pos[0], end_pos[1]))
-
-        vector_size = np.linalg.norm(end_pos)
-        equality = r'\approx'
-        if has_one_decimal_or_less(vector_size):
-            equality = '='
-
-        def xy():
-            ret = MathTex(vec_v_str, "=", r"\sqrt{", f"{end_pos[0] ** 2:.1f}", "+", f"{end_pos[1] ** 2:.1f}", "}", color=YELLOW)
-            ret[0].set_color(RED)
-            ret[3].set_color(BLUE)
-            ret[5].set_color(BLUE)
-            return ret;
-        formulas.add(xy())
-        def f1():
-            ret = MathTex(vec_v_str, "=", r"\sqrt{", f"{vector_size * vector_size:.1f}", "}", color=YELLOW)
-            ret[0].set_color(RED)
-            ret[3].set_color(BLUE)
-            return ret
-        formulas.add(f1())
-        def f2():
-            ret = MathTex(vec_v_str, equality, f"{vector_size:.1f}", color=YELLOW)
-            ret[0].set_color(RED)
-            ret[2].set_color(BLUE)
-            return ret
-        formulas.add(f2())
-
-        frame_x = SurroundingRectangle(component_anims.x().label[0], color=RED)
-        frame_y = SurroundingRectangle(component_anims.y().label[0], color=RED)
-        frame_x_formula = SurroundingRectangle(formula_text_1.get_part_by_tex('x'), color=RED) # type: ignore
-        frame_y_formula = SurroundingRectangle(formula_text_2.get_part_by_tex('y'), color=RED) # type: ignore
-
-        self.add(velocity_text)
-        self.play(GrowArrow(velocity_vector))
+        formula_1 = create_formula(r"\vec{v} = P - E")
+        formula_2 = create_formula(r"\vec{d} \cdot \vec{v} = |\vec{d}| |\vec{v}| \cos(\alpha)")
+        formula_3 = create_formula(r"\cos(\alpha) = \frac{\vec{d} \cdot \vec{v}}{|\vec{v}|}")
+        formula_4 = create_formula(r"\text{Detected: } \cos(\alpha) \geq \cos(\beta/2)")
+        
+        # Animation sequence
+        self.play(
+            FadeIn(ctx.enemy.obj),
+            FadeIn(enemy_label))
+        self.wait(0.8)
+        
+        # Show look direction
+        self.play(
+            *[GrowArrow(mob) if isinstance(mob, Arrow) else FadeIn(mob) 
+              for mob in look_arrow.get_mobjects()])
+        self.wait(0.8)
+        
+        # Show detection cone
+        self.play(FadeIn(ctx.detection.cone))
+        self.wait(0.8)
+        
+        # Show player
+        self.play(
+            FadeIn(ctx.player.obj),
+            FadeIn(player_label))
+        self.wait(0.8)
+        
+        # Show vector from E to P
+        self.play(Write(formula_1), run_time=1.5)
         self.wait(0.5)
-
-        self.play(formulas.next())
-
-        component_anims.play(self)
-
-        self.play(Create(frame_x))
-        self.wait(0.3)
-        self.play(ReplacementTransform(frame_x, frame_x_formula))
-        self.play(FadeOut(frame_x_formula))
-        self.play(formulas.next())
-
-        self.wait(0.2)
-
-        self.play(Create(frame_y))
-        self.wait(0.3)
-        self.play(ReplacementTransform(frame_y, frame_y_formula))
-        self.play(FadeOut(frame_y_formula))
-        self.play(formulas.next())
-        self.wait(0.3)
-        self.play(formulas.next())
-        self.wait(0.3)
-        self.play(formulas.next())
-        self.wait(0.3)
-        self.play(formulas.next())
-
+        self.play(
+            *[GrowArrow(mob) if isinstance(mob, Arrow) else FadeIn(mob) 
+              for mob in to_player_arrow.get_mobjects()],
+            run_time=1.2)
+        self.wait(1.5)
+        
+        # Show angle
+        self.play(
+            Create(angle_arc),
+            FadeIn(angle_label),
+            run_time=1.2)
+        self.wait(1.5)
+        
+        # Show dot product formula - slower
+        self.play(Transform(formula_1, formula_2), run_time=2.5)
         self.wait(2)
-        self.clear()
-
-class FormulasHelper:
-    def __init__(self, first_formula):
-        self.formulas = [first_formula]
-        self.index = 0
-
-    def add(self, f):
-        f.move_to(self.formulas[0])
-        self.formulas.append(f)
-
-    def next(self):
-        f = self.formulas[self.index]
-        if self.index == 0:
-            ret = Write(f)
-        else:
-            ret = TransformMatchingTex(self.formulas[self.index - 1], f)
-        self.index += 1
-        return ret
+        
+        # Show cos(alpha) isolation - slower
+        self.play(Transform(formula_1, formula_3), run_time=2.5)
+        self.wait(2)
+        
+        # Show detection condition - slower
+        self.play(Transform(formula_1, formula_4), run_time=2.5)
+        self.wait(1.5)
+        
+        # Demonstrate: move player inside detection zone
+        new_pos_inside = UP * 1.8 + RIGHT * 0.3
+        self.play(
+            ctx.player.obj.animate.move_to(new_pos_inside),
+            run_time=2.5)
+        self.wait(2)
+        
+        # Move player outside detection zone
+        new_pos_outside = LEFT * 2 + UP * 1
+        self.play(
+            ctx.player.obj.animate.move_to(new_pos_outside),
+            run_time=2.5)
+        self.wait(2)
+        
+        # Rotate enemy to show dynamic detection
+        self.play(
+            ctx.enemy.angle.animate.set_value(np.radians(180)),
+            run_time=4,
+            rate_func=smooth)
+        self.wait(2)
+        
+        self.wait(1)

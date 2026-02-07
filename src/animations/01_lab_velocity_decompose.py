@@ -42,8 +42,7 @@ class VelocityDecomposition(MovingCameraScene):
             end=target_point, 
             buff=0, 
             color=RED, 
-            stroke_width=6
-        )
+            stroke_width=6)
         ghost_apple.add_updater(lambda m: m.move_to(velocity_vector.get_end()))
         component_anims = create_component_animations_2d(start_point, target_point, velocity)
 
