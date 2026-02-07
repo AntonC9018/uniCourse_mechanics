@@ -31,8 +31,9 @@ def set_default_output(name):
 def get_output_path(name):
     git_root = _get_git_root()
     animations_dir = git_root / "animations"
-    animations_dir.mkdir(parents=True, exist_ok=True)
-    return str(animations_dir / name)
+    ret = animations_dir / name
+    ret.parent.mkdir(parents=True, exist_ok=True)
+    return str(ret) 
 
 class ComponentAnimation:
     def __init__(self, label: MathTex, line: DashedLine):
