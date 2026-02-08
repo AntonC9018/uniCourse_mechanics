@@ -291,3 +291,22 @@ which can be done by doing using the pythagorean theorem like discussed before.
 
 Then, just check that the distance is smaller than the max distance.
 </details>
+
+
+#### In what direction does the enemy need to move to reach the player
+
+<details>
+<summary>Answer</summary>
+
+$` E `$ is the position of the enemy, $` P `$ is the position of the player.
+
+$` \vec{v} = P - E `$ is the vector from the enemy to the player.
+If you were to add this vector to the enemy's position,
+aka **move** the enemy by $` \vec{v} `$, it is going to end up at the player's position.
+
+The direction is just this vector normalized:
+$` \hat{d} = \frac{\vec{v}}{|\vec{v}|} `$
+</details>
+
+#### Line segment as a linear interpolation between two points
+
