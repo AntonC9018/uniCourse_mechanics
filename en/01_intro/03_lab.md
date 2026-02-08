@@ -147,7 +147,7 @@ void update(Character& c)
 }
 ```
 
-Getting the velocity direction has to be done manually by checking components:
+Getting the velocity direction has to be done manually by normalizing each component:
 
 ```cpp
 void get_velocity_direction(const Character& c, float& x_output, float& y_output)
@@ -238,9 +238,9 @@ It has an angle of player detection.
 Say, it is 40 degrees.
 
 How would you go about finding if it can see the player, 
-    given the position of the enemy, 
-    the direction it's looking,
-    and the player's position?
+given the position of the enemy, 
+the direction it's looking,
+and the player's position?
 
 ![](../../animations/01_lab_enemy_sight.gif)
 
@@ -279,3 +279,15 @@ $` cos(\alpha) `$ gets smaller with larger angles.
 So we need it to be larger than $` cos(\frac{\beta}{2}) `$ for the player to be in the visibility zone.
 </details>
 
+
+How do you limit the maximum distance that the player is detectable?
+
+<details>
+<summary>Answer</summary>
+
+Just compute the distance to the player.
+This is done by computing the length of $` \vec{v} `$, 
+which can be done by doing using the pythagorean theorem like discussed before.
+
+Then, just check that the distance is smaller than the max distance.
+</details>
