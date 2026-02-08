@@ -27,6 +27,7 @@ For example, if you're making a 2D grid game, you'd typically use the **cell siz
 rather than on ditances from Unity or from the real world.
 </details>
 
+---
 #### What is a unit of time?
 
 <details>
@@ -49,6 +50,7 @@ Ticks are independent of the framerate and are not universal.
 They are defined within a particular game.
 </details>
 
+---
 #### What is speed?
 
 <details>
@@ -57,6 +59,7 @@ They are defined within a particular game.
 Speed means how many **units of distance** does the object travel in a **unit of time**.
 </details>
 
+---
 #### What is velocity?
 
 <details>
@@ -65,6 +68,7 @@ Speed means how many **units of distance** does the object travel in a **unit of
 Velocity is speed in a certain direction.
 </details>
 
+---
 #### Suppose an object is moving through space with some velocity. 
 
 How would you go about communicating the fact that the velocity goes in a direction?
@@ -101,6 +105,7 @@ is **so that** it gives the velocity vector when multiplied by speed.
 ![normalized_times_length](../../animations/01_normalized_times_length.gif)
 </details>
 
+---
 #### How to get the speed and the direction from a velocity vector?
 
 <details>
@@ -112,6 +117,7 @@ It can be computed using pythagorean theorem, $` \lvert \vec{v} \rvert = \sqrt{x
 ![vector_length](../../animations/01_pythagorean_len.gif)
 </details>
 
+---
 #### How to represent a character?
 
 If you have a character that is **located at some point in space** 
@@ -231,6 +237,7 @@ void get_velocity(const Character& c)
 </details>
 
 
+---
 #### Enemy detection
 
 Suppose an enemy is looking forward.
@@ -293,6 +300,7 @@ Then, just check that the distance is smaller than the max distance.
 </details>
 
 
+---
 #### In what direction does the enemy need to move to reach the player
 
 <details>
@@ -308,5 +316,6 @@ The direction is just this vector normalized:
 $` \hat{d} = \frac{\vec{v}}{|\vec{v}|} `$
 </details>
 
+---
 #### Line segment as a linear interpolation between two points
 
