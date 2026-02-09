@@ -226,12 +226,12 @@ struct Character
 
 void update(Character& c)
 {
-    c.position += c.velocity;
+    c.position += get_velocity(c);
 }
 
 void get_velocity(const Character& c)
 {
-    return c.speed * c.velocity;
+    return c.speed * c.direction;
 }
 ```
 </details>
