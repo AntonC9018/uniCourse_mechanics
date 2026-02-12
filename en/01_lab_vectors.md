@@ -371,12 +371,10 @@ You can choose what's going to happen in between to smooth out the movement.
 <details>
 <summary>Linear interpolation</summary>
 
-Linear interpolation is the simplest way to solve this problem.
+**Linear interpolation** is the simplest way to solve this problem.
 
-The idea is to use a function that changes *linearly*, in which
-case the technique is called **linear interpolation**.
-
-"Linear" basically means that the movement is going to happen with the same speed
+The idea is to use a function that changes *linearly,
+which basically means that the movement is going to happen with the same speed
 for the whole animation.
 So, at $` t = \frac{t_0}{2} `$, the position is going to be right 
 in the middle of the two points.
@@ -385,16 +383,16 @@ At $` t = \frac{t_0}{3} `$, it's going to be $` \frac{1}{3} `$rd of the way
 from $` S `$ to $` E `$.
 
 To simplify the computations, $` t `$ is usually rescaled first.
-Let's call it $` p = frac{t}{t_0} `$.
+Let's call it $` p = \frac{t}{t_0} `$.
 
 Then, define $` f(t) `$ through $` g `$:
 
-$` f(t) = g(frac{t}{t_0}); `$
+$` f(t) = g(\frac{t}{t_0}); `$
 
 <details>
 <summary>Interpretation - combination of 2 points</summary>
 
-Loosely speaking, we take $` p `$ of the first point, and take the rest ($` 1 - p $`) 
+Loosely speaking, we take $` p `$ of the first point, and take the rest ($` 1 - p `$) 
 of the second point, and kinda add that together.
 
 So you get the following:
@@ -416,13 +414,13 @@ by the whole $` \vec{v} `$ to $` E `$.
 At $` p = \frac{1}{2} `$, you'd move by half of $` \vec{v} `$ 
 giving you the point between the two, exactly.
 
-$` \vec{v} = \vec{P} - \vec{S}`$
+$` \vec{v} = \vec{E} - \vec{S}`$
 
 $` g(p) = p \vec{v} + \vec{S} `$
 
 This is equivalent to the "combination of 2 points" interpretation:
 
-$` p \vec{v} + \vec{S} = \\\\ p (\vec{P} - \vec{S}) + \vec{S} = \\\\ p \vec{P} - p \vec{S} + \vec{S} = \\\\ p \vec{P} + (1 - p) \vec{S} `$
+$` p \vec{v} + \vec{S} = \\\\ p (\vec{E} - \vec{S}) + \vec{S} = \\\\ p \vec{E} - p \vec{S} + \vec{S} = \\\\ p \vec{E} + (1 - p) \vec{S} `$
 </details>
 
 </details>
