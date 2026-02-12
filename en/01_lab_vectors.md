@@ -345,5 +345,116 @@ $` \hat{d} = \frac{\vec{v}}{|\vec{v}|} `$
 </details>
 
 ---
-#### Line segment as a linear interpolation between two points
+#### Line segment as an interpolation between two points
 
+If you have a starting ($` S `$) and an ending ($` E `$) position vectors of an object,
+how would you go about animating a smooth translation of it between those two points,
+spread over $` t_0 `$ seconds (say, $` t_0 = 2 `$),
+with each new position drawn each frame of the game?
+
+<details>
+<summary>Interpolation</summary>
+
+**Interpolation** is the technique you'd usually use to solve this problem.
+
+The basic idea is that you'd define a vector-valued function $` f(t) `$,
+which is going to be called each frame to determine 
+the visual position of the object in that frame.
+$` t `$ in that function is the **time passed since the movement started**.
+
+At $` t = 0 `$, the object is going to be at $` S `$, denoted as $` f(0) = S `$.
+At $` t = t_0 `$, it's going to be at $` E `$, denoted as $` f(t_0) = E `$.
+
+You can choose what's going to happen in between to smooth out the movement.
+</details>
+
+<details>
+<summary>Linear interpolation</summary>
+
+Linear interpolation is the simplest way to solve this problem.
+
+The idea is to use a function that changes *linearly*, in which
+case the technique is called **linear interpolation**.
+
+"Linear" basically means that the movement is going to happen with the same speed
+for the whole animation.
+So, at $` t = \frac{t_0}{2} `$, the position is going to be right 
+in the middle of the two points.
+
+At $` t = \frac{t_0}{3} `$, it's going to be $` \frac{1}{3} `$rd of the way 
+from $` S `$ to $` E `$.
+
+To simplify the computations, $` t `$ is usually rescaled first.
+Let's call it $` p = frac{t}{t_0} `$.
+
+Loosely speaking, we take $` p `$ of the first point, and take the rest ($` 1 - p $`) 
+of the second point, and kinda add that together.
+
+So you get the following:
+$` f(t) = g(frac{t}{t_0}); g(p) = p \vec{S} + (1 - p) \vec{E} `$
+
+</details>
+
+<details>
+<summary>Code</summary>
+
+```cpp
+v2 getAnimatedPosition(
+    v2 startPosition, // S
+    v2 endPosition, // E
+    float timeSinceStart, // t
+    float completionTime) // t_0
+{
+    assert(completionTime > 0);
+
+    float p = timeSinceStart / completionTime;
+    v2 ret = startPosition * p + endPosition * (1 - p); 
+    return ret;
+}
+```
+
+</details>
+
+---
+
+#### Capping the speed of an object
+
+Say, an object is moving with some velocity $` \vec{v} `$.
+
+How do you make it so that the speed is capped at some value, say $` 5 `$?
+
+> In games, **capping** means limiting the value to some maximum.
+> So, if the speed is capped at $` 5 `$, that means it cannot exceed $` 5 `$.
+> If it ever gets larger than $` 5 `$, it just gets scaled back to $` 5 `$.
+
+<details>
+<summary>Answer</summary>
+
+You do this by **capping the speed** (the magnitude of velocity) 
+before moving applying the movement.
+
+The goal is to find a vector that points in the same direction as $` \vec{v} `$,
+but has a length no longer than $` 5 `$.
+
+The idea is to first check if the length of $` v `$ is already below limit.
+In case it isn't, only then should it be set to $` 5 `$.
+
+Next, find the unit vector pointing in the same direction as $` v `$.
+Next, rescale that vector to $` 5 `$.
+
+Expressed as a function:
+```cpp
+v2 cap_speed(v2 velocity, float maxValue)
+{
+    float speed = velocity.magnitude();
+    if (speed <= maxValue)
+    {
+        return velocity;
+    }
+
+    v2 direction = velocity * (1.0f / speed);
+    v2 ret = direction * maxValue;
+    return ret;
+}
+```
+</details>
