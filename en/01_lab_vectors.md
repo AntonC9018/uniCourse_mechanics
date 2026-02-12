@@ -1,5 +1,33 @@
 # Lab 1
 
+## Concepts to know
+
+1. Vectors
+2. Operations with vectors
+    - addition
+    - subtraction
+    - length of vector
+    - dot product (projection)
+3. Unit vectors, normalization
+4. 2D Rotations (special case of linear transformations)
+5. Linear interpolation
+6. [Line parametrization](https://mathinsight.org/line_parametrization)
+
+Main resource:
+- [3Blue1Brown course](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
+
+
+## Practice
+
+Solve practice problems from all these sources:
+- [Basics](https://tutorial.math.lamar.edu/Problems/CalcII/Vectors_Basics.aspx)
+- [Arithmetic](https://tutorial.math.lamar.edu/Problems/CalcII/VectorArithmetic.aspx)
+- [Dot Product](https://tutorial.math.lamar.edu/Problems/CalcII/DotProduct.aspx)
+
+Each of these includes notes.
+
+## Questions you should be able to answer
+
 #### What is a unit of distance (length)?
 
 <details>
@@ -82,7 +110,7 @@ In 2 dimensions, velocity can be represented using an `x` component and a `y` co
 For example, a velocity with components `x = 1` and `y = 3`, per second,
 means that the object will travel **by 1 unit of distance in `x`, and by 3 units of distance in `y` every second**.
 
-![velocity_decomposition](../../animations/01_vector_decomposition.gif)
+![velocity_decomposition](../animations/01_vector_decomposition.gif)
 </details>
 
 <details>
@@ -102,7 +130,7 @@ The velocity can be treated as a **direction** vector and a **speed** scalar.
 The point of direction being normalized (having length of 1) 
 is **so that** it gives the velocity vector when multiplied by speed.
 
-![normalized_times_length](../../animations/01_normalized_times_length.gif)
+![normalized_times_length](../animations/01_normalized_times_length.gif)
 </details>
 
 ---
@@ -114,7 +142,7 @@ is **so that** it gives the velocity vector when multiplied by speed.
 The speed is just the **length** of the velocity vector.
 It can be computed using pythagorean theorem, $` \lvert \vec{v} \rvert = \sqrt{x^2 + y^2} `$.
 
-![vector_length](../../animations/01_pythagorean_len.gif)
+![vector_length](../animations/01_pythagorean_len.gif)
 </details>
 
 ---
@@ -249,12 +277,12 @@ given the position of the enemy,
 the direction it's looking,
 and the player's position?
 
-![](../../animations/01_lab_enemy_sight.gif)
+![](../animations/01_lab_enemy_sight.gif)
 
 <details>
 <summary>Answer</summary>
 
-<img src=../../animations/01_lab_dot_product_explanation.gif />
+<img src=../animations/01_lab_dot_product_explanation.gif />
 
 Use dot product for this.
 
