@@ -274,7 +274,7 @@ When used for $` \hat{d} `$ and $` \vec{v} `$, we get the following:
 
 $` \hat{d} \cdot \vec{v} = \lvert \hat{d} \rvert \lvert \vec{v} \rvert cos(\alpha) `$
 
-Since $` \hat{d} `$ is a normal vector, we can simplify it further to:
+Since $` \hat{d} `$ is a unit vector, we can simplify it further to:
 
 $` \lvert \hat{d} \rvert \lvert \vec{v} \rvert cos(\alpha) = 1 \lvert \vec{v} \rvert cos(\alpha) = \lvert \vec{v} \rvert cos(\alpha) `$
 
