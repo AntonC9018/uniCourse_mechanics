@@ -387,11 +387,43 @@ from $` S `$ to $` E `$.
 To simplify the computations, $` t `$ is usually rescaled first.
 Let's call it $` p = frac{t}{t_0} `$.
 
+Then, define $` f(t) `$ through $` g `$:
+
+$` f(t) = g(frac{t}{t_0}); `$
+
+<details>
+<summary>Interpretation - combination of 2 points</summary>
+
 Loosely speaking, we take $` p `$ of the first point, and take the rest ($` 1 - p $`) 
 of the second point, and kinda add that together.
 
 So you get the following:
-$` f(t) = g(frac{t}{t_0}); g(p) = p \vec{S} + (1 - p) \vec{E} `$
+
+$` g(p) = p \vec{S} + (1 - p) \vec{E} `$
+</details>
+
+<details>
+<summary>Interpretation - scaling a vector between endpoints</summary>
+
+The idea is to find the vector $` \vec{v} `$ going from $` S `$ to $` E `$.
+Then, scale it by $` p `$ and attach it to $` S `$.
+
+At $` p = 0 `$, you'd get $` S `$, because you'd not be moving from the starting point.
+
+At $` p = 1 `$, you'd get $` E `$, because you'd move from $` S `$ 
+by the whole $` \vec{v} `$ to $` E `$.
+
+At $` p = \frac{1}{2} `$, you'd move by half of $` \vec{v} `$ 
+giving you the point between the two, exactly.
+
+$` \vec{v} = \vec{P} - \vec{S}`$
+
+$` g(p) = p \vec{v} + \vec{S} `$
+
+This is equivalent to the "combination of 2 points" interpretation:
+
+$` p \vec{v} + \vec{S} = \\\\ p (\vec{P} - \vec{S}) + \vec{S} = \\\\ p \vec{P} - p \vec{S} + \vec{S} = \\\\ p \vec{P} + (1 - p) \vec{S} `$
+</details>
 
 </details>
 
