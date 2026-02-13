@@ -203,7 +203,7 @@ void get_velocity_direction(const Character& c, float& x_output, float& y_output
 
 Game libraries commonly provide a vector abstraction,
 called `v2` or `Vector2` or similar.
-It usually has functions or overloaded for addition, subtraction, scaling, length, dot product, etc.
+It usually has functions or overloaded operators for addition, subtraction, scaling, length, dot product, etc.
 
 ```cpp
 struct v2
@@ -373,7 +373,7 @@ You can choose what's going to happen in between to smooth out the movement.
 
 **Linear interpolation** is the simplest way to solve this problem.
 
-The idea is to use a function that changes *linearly,
+The idea is to use a function that changes *linearly*,
 which basically means that the movement is going to happen with the same speed
 for the whole animation.
 So, at $` t = \frac{t_0}{2} `$, the position is going to be right 
@@ -461,7 +461,7 @@ How do you make it so that the speed is capped at some value, say $` 5 `$?
 <summary>Answer</summary>
 
 You do this by **capping the speed** (the magnitude of velocity) 
-before moving applying the movement.
+before applying the movement.
 
 The goal is to find a vector that points in the same direction as $` \vec{v} `$,
 but has a length no longer than $` 5 `$.
