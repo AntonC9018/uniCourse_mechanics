@@ -382,12 +382,13 @@ in the middle of the two points.
 At $` t = \frac{t_0}{3} `$, it's going to be $` \frac{1}{3} `$rd of the way 
 from $` S `$ to $` E `$.
 
-To simplify the computations, $` t `$ is usually rescaled first.
+To simplify the computations, $` t `$ is usually rescaled to the interval $` [0, 1] `$ first.
 Let's call it $` p = \frac{t}{t_0} `$.
+Now, $` p `$ kind of represents **the portion of the way** from $` S `$ to $` E `$. 
 
 Then, define $` f(t) `$ through $` g `$:
 
-$` f(t) = g(\frac{t}{t_0}); `$
+$` f(t) = g(\frac{t}{t_0}) `$
 
 <details>
 <summary>Interpretation - combination of 2 points</summary>
