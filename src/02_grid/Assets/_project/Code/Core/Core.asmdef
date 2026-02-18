@@ -1,0 +1,4 @@
+{
+    "name": "Core",
+    "references": ["NaughtyAttributes.Core"]
+}
