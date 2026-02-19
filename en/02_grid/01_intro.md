@@ -632,5 +632,127 @@ static (Obj Object, IntVector2 Position, int Distance)? Raycast(
     return null;
 }
 ```
-
 </details>
+
+## Optimizing collision checks
+
+<details>
+<summary>Specifics of collisions in 2D grid-based games</summary>
+
+Collision is the situation when 
+**two objects would overlap in their position or intersect**,
+which has to be resolved somehow.
+
+In the specific case of a 2D grid-based game,
+collisions are often determined 
+and resolved before they could actually happen.
+
+For example, in chess, **taking an opponent's piece is a key mechanic of the game**,
+it doesn't just happen after the fact of taking the same position as an enemy piece.
+The game has to consider pieces blocking movement and
+pieces taking differently than moving (pawns).
+
+In Crypt of the Necrodancer, attacks are controlled by the same button
+as movements, but a movement is only executed if an attack fails.
+
+So, especially for 2D games, it's more important to discuss
+how to detect a **potential** overlap rather 
+than react to a collision that's just taken place.
+The checks needed to be done to detect 
+a potential overlap are usually called simply **collision checks**
+</details>
+
+### The need for optimization
+
+So far, we have implemented collision checks by simply
+going through the list of objects and checking if 
+any of them are occupying the cell under test.
+
+This is fine for a small number of objects,
+but becomes expensive for larger simulations,
+especially if multiple checks have to be executed at a time 
+(like when doing a raycast).
+
+This algorithm can be improved by using an additional data structure
+that would speed up each individual collision check.
+The goal of this data structure is so we could determine
+**which objects occupy a particular cell very quickly**.
+
+<details>
+<summary>Complexity</summary>
+
+The time complexity of this simple algorithm is $` O(N) `$ for each check,
+where $` N `$ is the number of objects in the scene.
+If $` M `$ checks are going to be executed, the total complexity is $` O(N * M) `$.
+
+The idea is to drop an individual collision check's complexity to $` O(1) `$.
+</details>
+
+### Uniform grid
+
+The idea is to make a **2D array** and put the objects that a particular 
+cell contains **at that cell's coordinates** in the array.
+Looking up into the array is then extremely efficient,
+requiring just two simple indexing operations and a null check.
+
+Building such a grid would require going through each object once,
+but once it's built, any future collision check becomes basically free.
+
+### Spatial hash
+
+The idea is to build a hash set or a hash map
+using each object's position as the key.
+
+```cs
+var dict = new Dictionary<IntVector2, Obj>();
+foreach (var obj in objects)
+{
+    dict.Add(obj.Position, obj);
+}
+
+bool CheckOverlaps(IntVector2 position)
+{
+    return dict.ContainsKey(position);
+}
+Obj? GetObjectAt(IntVector2 position)
+{
+    return dict.GetValueOrDefault(position, null);
+}
+```
+
+If in your game objects can overlap,
+you may use a list insted of a single object per cell.
+
+> Spatial hashes can also be used to implement what's called the **broad phase**,
+> which I'll explain when we'll study non-grid 2D physics.
+
+### Updating the data structures
+
+When to update the data structures depends on the game's needs.
+
+For some games it's best **to recreate the data structures completely each time 
+something changes in the world**, like an object moves or gets added or removed,
+because updating it with movement is complicated or undesired.
+
+For others, it's easy **to update the data structure together with movement**,
+keeping the actual object's positions and the data structure in sync.
+
+The key idea that typically applies in games is that
+**you should not couple the object storage to the collision data structure**.
+Try to keep the collision data structure exclusively used for collision checks.
+
+### Static geometry
+
+The collision checks can be further optimized 
+if you have **obstacles that never change**,
+otherwise called **static geometry** or level geometry.
+
+The idea is to **only rebuild the helper data structure for dynamic objects**,
+and only **build the data structure for the static geometry once**.
+The collision checks then become a two-step process:
+- Check static data structure;
+- Check dynamic data structure.
+
+This is useful if a significant part of the objects are static
+and rebuilding the data structure gets expensive because 
+of the large number of objects.
