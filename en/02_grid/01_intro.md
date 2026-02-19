@@ -56,7 +56,8 @@ This makes it easy to know the coordinates of any one cell.
 
 ### Screen coordinates
 
-When drawing to the screen, **screen coordinates** are used.
+When drawing to the screen, **screen coordinates** are used,
+also called **coordinates in screen space**.
 These are the **pixel coordinates** of things drawn to the screen.
 
 Screen coordinates also start at $` 0,0 `$ in the top left,
@@ -66,16 +67,29 @@ In order to display a cell, it is not enough to only have its coordinates.
 It is also necessary to at least know the 
 **mapping from grid to screen coordinates**.
 
-In minimalist libraries, where you control the process 
-of drawing to the screen, this can be done directly
-by simply stretching the grid coordinates.
+### Coordinate systems in minimal frameworks
+
+In minimal frameworks, you typically draw to the screen directly, in screen space,
+without having to go through the world space, like you do in Unity (described later).
+
+The top-left corner of the screen in these libraries has coordinates $` 0,0 `$,
+and they grow towards the bottom-right corner of the screen.
+It works just like in grid space, the only difference is that 
+**the distance units are pixels, rather than cells**.
+
+Since the data in the program is stored in grid space,
+while the rendering happens in screen space,
+the programmer has to **manually map coordinates from grid space to world space**.
+
+Luckily, it's very easy to implement in this setup, because the coordinates start 
+at the same point and the axes are not reversed.
+One has to simply **multiply by the cell size in pixels**.
+This is sort of like stretching each cell by its size in pixels.
 
 $` p_{S} = p_{G} * s `$, where:
 - $` p_{S} `$ are the screen coordinates;
 - $` p_{G} `$ are the grid coordinates;
 - $` s `$ is the scaling factor — how many pixels should a cell be wide.
-
-> Another term that's often used in graphics is **screen space**.
 
 ### World coordinates in Unity
 
@@ -159,6 +173,7 @@ because it's not possible with projections,
 which deliberately discards information.
 But the `z` may be ignored, because we only care about the 2D coordinates.
 
+
 ## Unity setup
 
 ### Packages/manifest.json
@@ -223,7 +238,7 @@ You have to be careful to only use it in scripts that are editor-only.
 #### Assembly definitions (`asmdef`s)
 
 In Unity, automated tests can only be done on code placed in a separate `asmdef`.
-`asmdef` are like the `csproj` files in .NET, with a few notable differences:
+`asmdef`s are like the `csproj` files in .NET, with a few notable differences:
 - They are JSON's, not XML;
 - They have unity-specific semantics (like `noEngineReferences`, `includePlatforms`, etc.);
 - References to other `asmdef`s may either be done using guids or names.
@@ -463,7 +478,7 @@ You can also simplify this somewhat and work with integers
 by snapping to the start of the cell beforehand.
 Then the checks stay the same but use integer comparisons.
 
-### Adjacent cells to a cell
+### Cells adjacent to a cell
 
 Just try adding the vectors indicating the desired offsets to the cell position.
 The offset may be up, down, left or right.
@@ -473,4 +488,163 @@ If you also want the diagonals,
 you have all combinations of $` -1 `$, $` 1 `$ and $` 0 `$ available for 8
 total offset vectors.
 
+### Overlap checks 
 
+Suppose the cells may only be occupied by a single object at a time.
+If a cell is already occupied, another object may not be placed there.
+How do you check if a cell is occupied?
+
+<details>
+<summary>Answer</summary>
+
+Just check if there is an object whose position is the cell you're trying to occupy.
+
+If the objects are stored in a list, the easiest way would be to go through the list
+and try to find the position among the objects.
+
+```cs
+static bool IsOccupied(List<Obj> objects, IntVector2 gridPos)
+{
+    foreach (var obj in objects)
+    {
+        if (obj.Position == gridPos)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+```
+</details>
+
+<details>
+<summary>Better way</summary>
+
+Better ways involve using a spatial hash or a uniform grid data structure 
+and will be discussed later.
+</details>
+
+### Raycasts
+
+Raycasts are essentially for finding the objects that are along a straight line.
+They have diverse use cases:
+- Finding all the objects in a line;
+- Finding the cells before the first object;
+- Finding the position of the first object;
+- Checking if there are any objects at a certain distance or less in a direction;
+- Other.
+
+It is easiest to deal with **orthogonal** or **diagonal** raycasts
+in the case of a 2D grid, those also being the most useful,
+so we'll focus on those.
+
+<details>
+<summary>How to implement?</summary>
+
+The idea is to check each consecutive cell in a straight line.
+
+!!!
+Animation 1 HERE. Show the player in the center of a 5x5 grid.
+objects around the player randomly.
+Show checks for all orthogonal directions by highlighting consecutive cells.
+Show the direction vectors (1, 0).
+Don't show the coordinates of cells.
+!!!
+
+!!!
+Animation 2 HERE. Same setup, but for the diagonal directions.
+!!!
+
+```cs
+static IEnumerable<IntVector2> GetConsecutiveCells(
+    Grid grid,
+    IntVector2 start,
+    IntVector2 dir)
+{
+    IntVector2 current = start;
+    while (true)
+    {
+        current += dir;
+        if (IsOffGrid(grid, current))
+        {
+            yield break;
+        }
+        yield return current;
+    }
+}
+
+static Obj? FindObjectAt(
+    List<Obj> objects,
+    IntVector2 pos)
+{
+    foreach (var obj in objects)
+    {
+        if (obj.Position == gridPos)
+        {
+            return obj;
+        }
+    }
+    return null;
+}
+
+static (Obj Object, IntVector2 Position)? Raycast(
+    Grid grid,
+    List<Obj> objects,
+    IntVector2 start,
+    IntVector2 dir)
+{
+    var positions = GetConsecutiveCells(grid, start, dir);
+    foreach (var p in positions)
+    {
+        if (FindObjectAt(objects, p) is { } obj)
+        {
+            return (obj, p);
+        }
+    }
+    return null;
+}
+```
+
+</details>
+
+<details>
+<summary>How to limit the distance?</summary>
+
+Only check a limited number of consecutive cells.
+!!!
+Animation 3 HERE.
+Show the player at the left of a straight line of cells going to the right of the player.
+Show the raycast going to the right.
+Limit it to 3, put the object at 5.
+It does not detect the object, show that with a cross.
+Change distance to 5, show it detecting the object. 
+!!!
+
+```cs
+static (Obj Object, IntVector2 Position, int Distance)? Raycast(
+    Grid grid,
+    List<Obj> objects,
+    IntVector2 start,
+    IntVector2 dir,
+    int maxDistance)
+{
+    var positions = GetConsecutiveCells(grid, start, dir);
+    int distance = 0;
+    foreach (var p in positions)
+    {
+        if (distance == maxDistance)
+        {
+            return null;
+        }
+        distance++;
+
+        if (FindObjectAt(objects, p) is { } obj)
+        {
+            return (obj, p, distance);
+        }
+    }
+    return null;
+}
+```
+
+</details>
