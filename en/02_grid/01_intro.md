@@ -543,17 +543,9 @@ so we'll focus on those.
 
 The idea is to check each consecutive cell in a straight line.
 
-!!!
-Animation 1 HERE. Show the player in the center of a 5x5 grid.
-objects around the player randomly.
-Show checks for all orthogonal directions by highlighting consecutive cells.
-Show the direction vectors (1, 0).
-Don't show the coordinates of cells.
-!!!
+![](../../animations/02_raycast_orthogonal.gif)
 
-!!!
-Animation 2 HERE. Same setup, but for the diagonal directions.
-!!!
+![](../../animations/02_raycast_diagonal.gif)
 
 ```cs
 static IEnumerable<IntVector2> GetConsecutiveCells(
@@ -611,14 +603,8 @@ static (Obj Object, IntVector2 Position)? Raycast(
 <summary>How to limit the distance?</summary>
 
 Only check a limited number of consecutive cells.
-!!!
-Animation 3 HERE.
-Show the player at the left of a straight line of cells going to the right of the player.
-Show the raycast going to the right.
-Limit it to 3, put the object at 5.
-It does not detect the object, show that with a cross.
-Change distance to 5, show it detecting the object. 
-!!!
+
+![](../../animations/02_raycast_distance.gif)
 
 ```cs
 static (Obj Object, IntVector2 Position, int Distance)? Raycast(
