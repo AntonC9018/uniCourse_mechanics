@@ -330,3 +330,147 @@ Tests can be run by using the **Test Runner** in Unity Editor,
 which can be accessed by clicking `Window → General → Test Runner`.
 
 ![Test Runner](images/test_runner.png)
+
+### .editorconfig
+
+This file is used to keep the programmer from using patterns disallowed by the compiler in Unity.
+
+Currently, I'm preventing block-scoped namespace declarations.
+In Unity, if you do the following, script assets start serializing incorrectly.
+```cs
+namespace Sample;
+```
+
+You have to do this:
+```cs
+namespace Sample
+{
+}
+```
+
+The explicit rule sets the first syntax as an error in the IDE.
+
+### Configuring the compiler flags
+
+It's always a good idea to enable nullability checks and set the language version to latest.
+In Unity, you do this by placing a `csc.rsp` file in `Assets` with the following:
+```
+-langversion:preview
+-nullable:enable
+```
+
+### `UNITY_EDITOR` constant
+
+`#if UNITY_EDITOR` preprocessor check can be used to disable parts of code
+that are meant for use within the editor only.
+The code will not compile for release if you leave in calls to functions that are only available in the editor.
+
+Alternatively, if the whole file is designed for just editor use, 
+you can put it in an `asmdef` with this configuration:
+```json
+{
+    "includePlatforms": [ "Editor" ]
+}
+```
+
+Do, however, note that if you make a `MonoBehavior`-derived class and put it in an editor-only `asmdef`,
+you won't be able to add it to an object from the editor.
+It just won't show up in the component dropdown.
+
+### Removing objects or components from build
+
+If you're feeling like having editor-only components is not valid,
+because they will break the build, you're not completely right.
+
+You can add flags to a game object or to a component to hide it from builds:
+```cs
+gameObject.hideFlags = HideFlags.DontSaveInBuild;
+component.hideFlags = HideFlags.DontSaveInBuild;
+```
+
+It is also possible to strip an object from builds completely
+by setting the tag of a game object to `EditorOnly`.
+
+## Grid space operations
+
+The grid coordinate space is just the most basic building block.
+Any useful mechanics will be derived by building abstractions on top of it.
+
+### Finding the cell coordinates from any point in grid space
+
+Let's recall the basic facts about a cell:
+- Any cell is a square, and the side lengths of all cells are the same, usually 1;
+- The cell coordinates are the coordinates of its top-left corner;
+- Cell with coordinates $` x, y `$ continues until $` x + 1, y + 1 `$ (its bottom-right corner).
+
+By using the fact that the cell contains all points from its $` x, y `$ to $` x + 1, y + 1 `$,
+it's easy to determine the $` x, y `$ having any point from the range —
+just round it down each of its coordinates (the `floor` function).
+This is going to effectively **snap** any position to its closest cell.
+
+Here's an illustration:
+![](images/cell_example.png)
+
+### Finding the coordinate of the center of the cell
+
+In order to find the center of a cell, 
+we just need to add the half-size vector to its top-left position,
+in grid space.
+The half size vector is $` \frac{1}{2}, \frac{1}{2} `$.
+
+However, if your goal is to do this in world space 
+using the idea of flipping the $`y`$ by this formula $` y_W = h - y_G - 1 `$, 
+since $`y`$ is going to change its sign,
+the vector is going to become $` \frac{1}{2}, -\frac{1}{2} `$.
+
+> You could think of deriving this as assuming $`h = 1`$, because we're
+> considering the whole grid to be the single cell for this operation,
+> and substituting $` \frac{1}{2} `$ for $`y_G`$ gets you 
+> $` y_W = 1 - \frac{1}{2} - 1 = -\frac{1}{2}`$
+
+> When positioning a cell in Unity, 
+> you might need to offset it if you're using the default Square model.
+>
+> If you're adjusting the positioning on prefab basis, 
+> it's going to have to be in world coordinates.
+>
+> Another way would be to make a square mesh with its origin in the top-left corner
+> (probably the cleanest),
+> or by offsetting it in grid space before mapping its position to world space.
+
+### Checking if a point is off-grid
+
+The key idea to understand to think through this operation is that
+you can **view the x and the y coordinates separately**.
+A point is going to be within the grid if 
+**both its x and y are within the grid's x and y range**
+
+Now, how do you check if the coordinate is in a range?
+Simply by checking the endpoints (the start and end of the range).
+The point has to be after the start but before the end.
+
+Since we set the start of our grid to $` 0,0 `$,
+the **starts of both x and y ranges will be at 0**.
+The ends are going to be at width ($` w `$) and height ($` h `$) respectively,
+because cells continue until the bottom-right corner, 
+which has the position of $` w, h `$.
+
+So the formula that comes out is:
+$` x >= 0 `$ and $` x < w `$ and $` y >= 0 `$ and $` y < h `$.
+
+You can also simplify this somewhat and work with integers 
+(cell coordinates, rather than just grid coordinates),
+by snapping to the start of the cell beforehand.
+Then the checks stay the same but use integer comparisons.
+
+### Adjacent cells to a cell
+
+Just try adding the vectors indicating the desired offsets to the cell position.
+The offset may be up, down, left or right.
+The vectors for these are $` 0, -1 `$, $` 0, 1 `$, $` -1, 0 `$ and $` 1, 0 `$.
+
+If you also want the diagonals, 
+you have all combinations of $` -1 `$, $` 1 `$ and $` 0 `$ available for 8
+total offset vectors.
+
+
