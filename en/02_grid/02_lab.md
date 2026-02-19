@@ -27,7 +27,6 @@ Optionally:
 - Add an actual sprite for the player.
 - Add sprite idle animation to the player.
 
-
 ## 3. Additional movement
 
 - Implement diagonal movement for the player, controlled by mouse.
@@ -74,3 +73,9 @@ Optionally:
 Advanced:
 - Add the ability for obstacles to move to the same place 
   that another obstacle moved off of in the same period.
+
+## 7. Advanced
+
+- Make the camera follow the player.
+- Make the grid infinite, procedurally generating cells 
+  and geometry in and out of existence.
