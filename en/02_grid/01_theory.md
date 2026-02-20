@@ -367,10 +367,10 @@ The explicit rule sets the first syntax as an error in the IDE.
 
 ### Configuring the compiler flags
 
-It's always a good idea to enable nullability checks and set the language version to latest.
+It's always a good idea to enable nullability checks and set the language version to a newer version.
 In Unity, you do this by placing a `csc.rsp` file in `Assets` with the following:
 ```
--langversion:preview
+-langversion:10
 -nullable:enable
 ```
 
