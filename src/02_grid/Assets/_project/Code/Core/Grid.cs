@@ -66,6 +66,7 @@ namespace Core
 
         public GridSize(int x, int y)
         {
+            this = default;
             X = x;
             Y = y;
         }

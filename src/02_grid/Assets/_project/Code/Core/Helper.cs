@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Core
 {
-    public readonly record struct UndoGroup : IDisposable
+    public readonly struct UndoGroup : IDisposable
     {
         private readonly int _groupId;
 
