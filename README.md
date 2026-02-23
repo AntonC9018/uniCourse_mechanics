@@ -1,1 +1,2 @@
 [Playlist ro](https://www.youtube.com/playlist?list=PL4sUOB8DjVlUwd7Nqt2QcTsdeEXslwc-u)
+[Playlist ru](https://www.youtube.com/playlist?list=PL4sUOB8DjVlV5CyKBtPuIinU4f6wp5BCa)
