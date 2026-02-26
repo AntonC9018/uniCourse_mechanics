@@ -20,7 +20,7 @@ Optionally:
 
 - Add a player.
 - The player should be able to move orthogonally, controlled by mouse.
-- Highlight the cells that the player can move onto (allowed moves).
+- Highlight all the cells that the player can move onto (allowed moves).
 - Make sure the player can't move off the grid.
 
 Optionally:
@@ -30,7 +30,7 @@ Optionally:
 ## 3. Additional movement
 
 - Implement diagonal movement for the player, controlled by mouse.
-- Make a button that switches between orthogonal and diagonal movement.
+- Have a keyboard button switch between orthogonal and diagonal movement.
 - Make sure the allowed moves highlighting works for either mode.
 - Limit the maximum distance that the player can travel in a move.
 
