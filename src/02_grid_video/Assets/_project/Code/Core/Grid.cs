@@ -1,5 +1,8 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Assertions;
+
+[assembly: InternalsVisibleTo("Core.Tests")]
 
 namespace Core
 {
@@ -7,7 +10,7 @@ namespace Core
     {
         [SerializeField]
         [Min(1)]
-        private Vector2Int _size = new(10, 10);
+        internal Vector2Int _size = new(10, 10);
 
         public Vector2Int Size => _size;
 
@@ -50,21 +53,21 @@ namespace Core
             return ret;
         }
 
-        public bool IsInGrid(Vector2Int pos)
+        public bool IsInGrid(Vector2Int gridPos)
         {
-            if (pos.x < 0)
+            if (gridPos.x < 0)
             {
                 return false;
             }
-            if (pos.x >= _size.x)
+            if (gridPos.x >= _size.x)
             {
                 return false;
             }
-            if (pos.y < 0)
+            if (gridPos.y < 0)
             {
                 return false;
             }
-            if (pos.y > _size.y)
+            if (gridPos.y >= _size.y)
             {
                 return false;
             }
