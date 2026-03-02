@@ -17,14 +17,16 @@ namespace Core
         private void Highlight()
         {
             var cellPosGridSpace = _cellTargeting.FindCellPositionUnderMouse();
-            _cellHigh.Clear(HighlightLayer.Hover);
+
+            var layer = _cellHigh.ModifyLayer(HighlightLayer.Hover);
+            layer.Clear();
             if (!_grid.IsInGrid(cellPosGridSpace))
             {
                 return;
             }
 
-            _cellHigh.SetColor(HighlightLayer.Hover, _highlightColor);
-            _cellHigh.AddHigh(cellPosGridSpace, HighlightLayer.Hover);
+            layer.SetColor(_highlightColor);
+            layer.AddHigh(cellPosGridSpace);
         }
     }
 }

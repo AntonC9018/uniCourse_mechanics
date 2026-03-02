@@ -11,6 +11,23 @@ namespace Core
         Count = 2,
     }
 
+    public readonly struct LayerAccessor
+    {
+        private readonly CellHighlighting _impl;
+        private readonly HighlightLayer _layer;
+
+        public LayerAccessor(HighlightLayer layer, CellHighlighting impl)
+        {
+            _layer = layer;
+            _impl = impl;
+        }
+
+        public void SetColor(Color color) => _impl.SetColor(_layer, color);
+        public void AddHigh(Vector2Int cellPos) => _impl.AddHigh(_layer, cellPos);
+        public void RemoveHigh(Vector2Int cellPos) => _impl.RemoveHigh(_layer, cellPos);
+        public void Clear() => _impl.Clear(_layer);
+    }
+
     [DefaultExecutionOrder(ExecutionOrder)]
     public sealed class CellHighlighting : MonoBehaviour
     {
@@ -27,17 +44,19 @@ namespace Core
             return ret;
         }
 
+        public LayerAccessor ModifyLayer(HighlightLayer layer) => new(layer, this);
+
         public void SetColor(HighlightLayer layer, Color color)
         {
             _colors[(int) layer] = color;
         }
 
-        public void AddHigh(Vector2Int cellPos, HighlightLayer layer)
+        public void AddHigh(HighlightLayer layer, Vector2Int cellPos)
         {
             Layer(layer).Add(cellPos);
         }
 
-        public void RemoveHigh(Vector2Int cellPos, HighlightLayer layer)
+        public void RemoveHigh(HighlightLayer layer, Vector2Int cellPos)
         {
             Layer(layer).Remove(cellPos);
         }

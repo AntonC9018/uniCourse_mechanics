@@ -25,11 +25,12 @@ namespace Core
             // find available moves
             var availableMovesInGridSpace = FindAvailableMoves();
 
-            _cellHigh.SetColor(HighlightLayer.AvailableMoves, _availableMoveColor);
-            _cellHigh.Clear(HighlightLayer.AvailableMoves);
+            var layer = _cellHigh.ModifyLayer(HighlightLayer.AvailableMoves);
+            layer.SetColor(_availableMoveColor);
+            layer.Clear();
             foreach (var h in availableMovesInGridSpace)
             {
-               _cellHigh.AddHigh(h, HighlightLayer.AvailableMoves);
+               layer.AddHigh(h);
             }
         }
 
