@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Core
 {
@@ -38,10 +39,14 @@ namespace Core
         {
             foreach (Transform cell in transform)
             {
-                Vector2 fpos = cell.position;
+                Vector2 fposWorldSpace = cell.position;
+                Vector2 fposGridSpace = WorldToGrid(fposWorldSpace);
+                Assert.AreEqual(fposGridSpace.x, Mathf.Floor(fposGridSpace.x));
+                Assert.AreEqual(fposGridSpace.y, Mathf.Floor(fposGridSpace.y));
+
                 Vector2Int pos = default;
-                pos.x = (int) fpos.x;
-                pos.y = (int) fpos.y;
+                pos.x = (int) fposGridSpace.x;
+                pos.y = (int) fposGridSpace.y;
 
                 if (pos == gridPos)
                 {

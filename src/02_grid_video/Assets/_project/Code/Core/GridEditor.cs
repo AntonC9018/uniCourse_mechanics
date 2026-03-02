@@ -76,7 +76,7 @@ namespace Core
                     Vector3 pos;
                     pos.x = worldPos.x;
                     pos.y = worldPos.y;
-                    pos.z = 1;
+                    pos.z = 0;
 
                     var cellt = cell.transform;
                     cellt.position = pos;
@@ -85,10 +85,26 @@ namespace Core
                 }
             }
 
+            SetupCamera();
+        }
+
+        private void SetupCamera()
+        {
+            var size = _grid.Size;
             var gridCenter = ((Vector2) size) / 2;
             Vector3 gridCenterInWorldSpace = _grid.GridToWorld(gridCenter);
             gridCenterInWorldSpace.z = -1;
-            _camera.transform.position = gridCenterInWorldSpace;
+
+            var ct = _camera.transform;
+            Undo.RecordObject(ct, "Reset camera position");
+            ct.position = gridCenterInWorldSpace;
+
+
+            Undo.RecordObject(_camera, "Projection");
+            _camera.orthographic = true;
+            _camera.orthographicSize = (float) size.y / 2;
+            _camera.nearClipPlane = -1;
+            _camera.farClipPlane = 1;
         }
     }
 }
