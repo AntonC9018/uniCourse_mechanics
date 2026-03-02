@@ -1899,6 +1899,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.Player
   _cellTargeting: {fileID: 437789656}
   _grid: {fileID: 437789654}
+  _cellHigh: {fileID: 437789657}
   _availableMoveColor: {r: 0.96981126, g: 0.13166513, b: 0, a: 1}
 --- !u!1 &259460085
 GameObject:
@@ -2987,6 +2988,7 @@ GameObject:
   - component: {fileID: 437789655}
   - component: {fileID: 437789654}
   - component: {fileID: 437789656}
+  - component: {fileID: 437789657}
   m_Layer: 0
   m_Name: grid
   m_TagString: Untagged
@@ -3125,7 +3127,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   _cellTargeting: {fileID: 437789656}
+  _grid: {fileID: 437789654}
   _highlightColor: {r: 0, g: 1, b: 0, a: 1}
+  _cellHigh: {fileID: 437789657}
 --- !u!114 &437789656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3140,6 +3144,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Core::Core.CellTargeting
   _grid: {fileID: 437789654}
   _camera: {fileID: 1353894043}
+--- !u!114 &437789657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 437789652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27298da95a724c7480e32027579329dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.CellHighlighting
+  _grid: {fileID: 437789654}
 --- !u!1 &441974641
 GameObject:
   m_ObjectHideFlags: 0

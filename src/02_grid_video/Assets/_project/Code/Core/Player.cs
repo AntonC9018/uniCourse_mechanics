@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace Core
 {
@@ -8,8 +7,8 @@ namespace Core
     {
         [SerializeField] private CellTargeting _cellTargeting = null!;
         [SerializeField] private Grid _grid = null!;
+        [SerializeField] private CellHighlighting _cellHigh = null!;
         [SerializeField] private Color _availableMoveColor = Color.coral;
-        private List<SpriteRenderer> _highlighted = new();
 
         private void Start()
         {
@@ -25,28 +24,12 @@ namespace Core
         {
             // find available moves
             var availableMovesInGridSpace = FindAvailableMoves();
-            // moves -> cell
-            var cellsToHighlight = new Transform[availableMovesInGridSpace.Count];
-            for (int index = 0; index < cellsToHighlight.Length; index++)
-            {
-                var pos = availableMovesInGridSpace[index];
-                var cell = _grid.FindCellAt(pos);
-                Assert.IsNotNull(cell);
-                cellsToHighlight[index] = cell!;
-            }
-            // dehighlight
-            foreach (var h in _highlighted)
-            {
-                h.color = Color.white;
-            }
-            _highlighted.Clear();
 
-            // highlight
-            foreach (var c in cellsToHighlight)
+            _cellHigh.SetColor(HighlightLayer.AvailableMoves, _availableMoveColor);
+            _cellHigh.Clear(HighlightLayer.AvailableMoves);
+            foreach (var h in availableMovesInGridSpace)
             {
-                var renderer1 = CellHelper.GetSpriteRenderer(c.gameObject);
-                renderer1.color = _availableMoveColor;
-                _highlighted.Add(renderer1);
+               _cellHigh.AddHigh(h, HighlightLayer.AvailableMoves);
             }
         }
 
