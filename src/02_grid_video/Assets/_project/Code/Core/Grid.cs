@@ -27,6 +27,13 @@ namespace Core
             return result;
         }
 
+        public Vector2Int WorldToGridOfCellOrigin(Vector3 posWorldSpace)
+        {
+            var gridSpace = WorldToGrid(posWorldSpace);
+            var ret = MakeSureCellOrigin(gridSpace);
+            return ret;
+        }
+
         public Vector2Int SnapToCellOrigin(Vector2 gridPos)
         {
             Vector2Int ret = default;
@@ -35,19 +42,42 @@ namespace Core
             return ret;
         }
 
+        public Vector2Int MakeSureCellOrigin(Vector2 gridPos)
+        {
+            Assert.AreEqual(gridPos.x, Mathf.Floor(gridPos.x));
+            Assert.AreEqual(gridPos.y, Mathf.Floor(gridPos.y));
+            var ret = SnapToCellOrigin(gridPos);
+            return ret;
+        }
+
+        public bool IsInGrid(Vector2Int pos)
+        {
+            if (pos.x < 0)
+            {
+                return false;
+            }
+            if (pos.x >= _size.x)
+            {
+                return false;
+            }
+            if (pos.y < 0)
+            {
+                return false;
+            }
+            if (pos.y > _size.y)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public Transform? FindCellAt(Vector2Int gridPos)
         {
             foreach (Transform cell in transform)
             {
                 Vector2 fposWorldSpace = cell.position;
                 Vector2 fposGridSpace = WorldToGrid(fposWorldSpace);
-                Assert.AreEqual(fposGridSpace.x, Mathf.Floor(fposGridSpace.x));
-                Assert.AreEqual(fposGridSpace.y, Mathf.Floor(fposGridSpace.y));
-
-                Vector2Int pos = default;
-                pos.x = (int) fposGridSpace.x;
-                pos.y = (int) fposGridSpace.y;
-
+                var pos = MakeSureCellOrigin(fposGridSpace);
                 if (pos == gridPos)
                 {
                     return cell;
