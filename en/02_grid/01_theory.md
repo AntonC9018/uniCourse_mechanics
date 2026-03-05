@@ -567,7 +567,7 @@ static IEnumerable<IntVector2> GetConsecutiveCells(
 
 static Obj? FindObjectAt(
     List<Obj> objects,
-    IntVector2 pos)
+    IntVector2 gridPos)
 {
     foreach (var obj in objects)
     {
