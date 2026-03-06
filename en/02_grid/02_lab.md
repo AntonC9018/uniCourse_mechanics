@@ -74,7 +74,7 @@ Advanced:
 - Add the ability for obstacles to move to the same place 
   that another obstacle moved off of in the same period.
 
-## 7. Advanced
+## 7. Advanced (optional)
 
 - Make the camera follow the player.
 - Make the grid infinite, procedurally generating cells 
