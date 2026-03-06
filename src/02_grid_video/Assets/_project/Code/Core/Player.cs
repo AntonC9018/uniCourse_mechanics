@@ -138,12 +138,13 @@ namespace Core
 
         private bool CheckValidMoveOrthogonal(Vector2Int currentPos, Vector2Int newPos)
         {
-            if (currentPos.x == newPos.x
-                && currentPos.y == newPos.y)
+            bool x = currentPos.x == newPos.x;
+            bool y = currentPos.y == newPos.y;
+            if (x || y)
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
 
         private List<Vector2Int> GetValidMovesOrthogonal(Vector2Int playerPos)

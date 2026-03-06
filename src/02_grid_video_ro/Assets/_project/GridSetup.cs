@@ -1,7 +1,6 @@
 #if UNITY_EDITOR
 using System;
 using System.Linq;
-using System.Numerics;
 using NaughtyAttributes;
 using UnityEditor;
 using UnityEngine;
@@ -15,7 +14,7 @@ namespace Core
     public sealed class GridSetup : MonoBehaviour
     {
         [SerializeField]
-        private Transform _gridParent = null!;
+        private Grid _grid = null!;
 
         [SerializeField]
         private GameObject _cellPrefab = null!;
@@ -36,34 +35,33 @@ namespace Core
         [SerializeField]
         private Vector2 _spriteChangeSeed = Vector2.zero;
 
-        const int width = 5;
-        const int height = 10;
-
         [Button]
         private void SetupGrid()
         {
-            Undo.RegisterFullObjectHierarchyUndo(_gridParent, "Delete old grid objects");
+            var parent = _grid.transform;
+            Undo.RegisterFullObjectHierarchyUndo(parent, "Delete old grid objects");
 
-            int childCount = _gridParent.childCount;
+            int childCount = parent.childCount;
             for (int i = childCount - 1; i >= 0; i--)
             {
-                var child = _gridParent.GetChild(i);
+                var child = parent.GetChild(i);
                 Object.DestroyImmediate(child.gameObject);
             }
 
-            for (int x = 0; x < width; x++)
+            var size = _grid.Size;
+            for (int x = 0; x < size.x; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < size.y; y++)
                 {
                     Vector2 gridPos = new(x, y);
-                    var worldPos = GridToWorld(gridPos);
+                    var worldPos = _grid.GridToWorld(gridPos);
 
                     Vector3 worldPos3 = worldPos;
                     worldPos3.z = 0;
 
                     var cell = GameObject.Instantiate(
                         _cellPrefab,
-                        parent: _gridParent,
+                        parent: parent,
                         position: worldPos3,
                         rotation: Quaternion.identity);
                     cell.name = $"x={gridPos.x},y={gridPos.y}";
@@ -75,7 +73,7 @@ namespace Core
                     spriteIndex = Math.Clamp(spriteIndex, 0, _cellSprites.Length - 1);
 
                     var sprite = _cellSprites[spriteIndex];
-                    var renderer1 = cell.GetComponentInChildren<SpriteRenderer>();
+                    var renderer1 = CellHelper.GetSpriteRenderer(cell);
                     renderer1.sprite = sprite;
 
                     // var ct = cell.transform;
@@ -89,9 +87,9 @@ namespace Core
         private void SetupCamera()
         {
             {
-                Vector2 gridCenterInGridSpace = new(width, height);
+                Vector2 gridCenterInGridSpace = _grid.Size;
                 gridCenterInGridSpace /= 2;
-                Vector2 gridCenterInWorldSpace = GridToWorld(gridCenterInGridSpace);
+                Vector2 gridCenterInWorldSpace = _grid.GridToWorld(gridCenterInGridSpace);
 
                 var t = _camera.transform;
                 Undo.RegisterCompleteObjectUndo(t, nameof(SetupCamera));
@@ -101,7 +99,7 @@ namespace Core
                 Undo.RegisterCompleteObjectUndo(_camera, "Change projection");
 
                 _camera.orthographic = true;
-                _camera.orthographicSize = (float) height / 2;
+                _camera.orthographicSize = (float) _grid.Size.y / 2;
                 _camera.nearClipPlane = -1;
                 _camera.farClipPlane = 1;
             }
@@ -116,14 +114,6 @@ namespace Core
             Undo.RegisterCompleteObjectUndo(this, nameof(LoadSprites));
             _cellSprites = sprites;
         }
-
-        private Vector2 GridToWorld(Vector2 gridPos)
-        {
-            Vector2 ret;
-            ret.x = gridPos.x;
-            ret.y = -gridPos.y;
-            return ret;
-        }
     }
-}
 #endif
+}
