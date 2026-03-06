@@ -5,7 +5,7 @@ namespace Core
     public sealed class CellHoverHigh : MonoBehaviour
     {
         [SerializeField] private Grid _grid = null!;
-        [SerializeField] private Camera _camera = null!;
+        [SerializeField] private CellTargeting _cellTargeting = null!;
 
         private SpriteRenderer? _highlightedCell = null;
 
@@ -16,10 +16,7 @@ namespace Core
                 _highlightedCell.color = Color.white;
             }
 
-            var mousePosInScreenSpace = Input.mousePosition;
-            var mousePosInWorldSpace = _camera.ScreenToWorldPoint(mousePosInScreenSpace);
-            var mousePosInGridSpace = _grid.WorldToGrid(mousePosInWorldSpace);
-            var cellPosInGridSpace = _grid.SnapToCellOrigin(mousePosInGridSpace);
+            var cellPosInGridSpace = _cellTargeting.GetCellPositionOfMouse();
             if (!_grid.IsInGrid(cellPosInGridSpace))
             {
                 return;

@@ -33,6 +33,14 @@ namespace Core
             return ret;
         }
 
+        public Vector2Int MakeSureCellOrigin(Vector2 gridPos)
+        {
+            var snapped = SnapToCellOrigin(gridPos);
+            Vector2 f = snapped;
+            Assert.AreEqual(f, gridPos);
+            return snapped;
+        }
+
         public bool IsInGrid(Vector2Int cellOriginPos)
         {
             if (cellOriginPos.x < 0)
@@ -60,12 +68,9 @@ namespace Core
             {
                 var cellWorldPos = cell.position;
                 var cellGridPos = WorldToGrid(cellWorldPos);
+                var gridPosInt = MakeSureCellOrigin(cellGridPos);
 
-                var snapped = SnapToCellOrigin(cellGridPos);
-                Vector2 f = snapped;
-                Assert.AreEqual(f, cellGridPos);
-
-                if (cellOriginPos == snapped)
+                if (cellOriginPos == gridPosInt)
                 {
                     return cell;
                 }
