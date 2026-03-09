@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Core
 {
-    public sealed class GridHighlight : MonoBehaviour
+    public sealed class HoverCellHighlight : MonoBehaviour
     {
         [SerializeField] private CellTargeting _cellTargeting = null!;
         [SerializeField] private Grid _grid = null!;

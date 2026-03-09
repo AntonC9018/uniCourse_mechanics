@@ -116,17 +116,22 @@ namespace Core
             }
         }
 
+        private List<Vector2Int> _validMovesCache = new();
+
         private List<Vector2Int> GetValidMoves(Vector2Int currentPos)
         {
+            _validMovesCache.Clear();
             switch (_moveSet)
             {
                 case MoveSet.Orthogonal:
                 {
-                    return GetValidMovesOrthogonal(currentPos);
+                    GetValidMovesOrthogonal(_validMovesCache, currentPos);
+                    break;
                 }
                 case MoveSet.Diagonal:
                 {
-                    return Moves.GetValidMovesDiagonal(_grid, currentPos);
+                    Moves.GetValidMovesDiagonal(_validMovesCache, _grid, currentPos);
+                    break;
                 }
                 default:
                 {
@@ -134,6 +139,7 @@ namespace Core
                     return null!;
                 }
             }
+            return _validMovesCache;
         }
 
         private bool CheckValidMoveOrthogonal(Vector2Int currentPos, Vector2Int newPos)
@@ -147,10 +153,8 @@ namespace Core
             return false;
         }
 
-        private List<Vector2Int> GetValidMovesOrthogonal(Vector2Int playerPos)
+        private void GetValidMovesOrthogonal(List<Vector2Int> result, Vector2Int playerPos)
         {
-            var result = new List<Vector2Int>();
-
             var size = _grid.Size;
             for (int x = 0; x < size.x; x++)
             {
@@ -170,8 +174,6 @@ namespace Core
 
                 result.Add(new(y: y, x: playerPos.x));
             }
-
-            return result;
         }
 
         private bool CheckValidMoveDiagonal(Vector2Int currentPos, Vector2Int newPos)
@@ -191,28 +193,53 @@ namespace Core
 
     public static class Moves
     {
-        public static List<Vector2Int> GetValidMovesDiagonal(Grid grid, Vector2Int playerPos)
+        public static void GetValidMovesDiagonal(
+            List<Vector2Int> result,
+            Grid grid,
+            Vector2Int playerPos)
         {
-            var result = new List<Vector2Int>();
-
             Vector2Int currentDir = new(1, 1);
+            var p = new GetCellInDirectionParams(
+                result,
+                grid,
+                StartPos: playerPos,
+                Dir: currentDir);
+            GetCellsInDirectionRotated(p);
+        }
+
+        public static void GetCellsInDirectionRotated(GetCellInDirectionParams p)
+        {
+            var currentDir = p.Dir;
             for (int i = 0; i < 4; i++)
             {
-                Vector2Int currentPos = playerPos;
-                while (true)
+                GetCellsInDirection(p with
                 {
-                    currentPos += currentDir;
-                    if (!grid.IsInGrid(currentPos))
-                    {
-                        break;
-                    }
-
-                    result.Add(currentPos);
-                }
+                    Dir = currentDir,
+                });
 
                 currentDir = new(currentDir.y, -currentDir.x);
             }
-            return result;
+        }
+
+        public static void GetCellsInDirection(GetCellInDirectionParams p)
+        {
+            Vector2Int currentPos = p.StartPos;
+            while (true)
+            {
+                currentPos += p.Dir;
+                if (!p.Grid.IsInGrid(currentPos))
+                {
+                    break;
+                }
+
+                p.Result.Add(currentPos);
+            }
         }
     }
+
+    public readonly record struct GetCellInDirectionParams(
+        List<Vector2Int> Result,
+        Grid Grid,
+        Vector2Int StartPos,
+        Vector2Int Dir);
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Core;
 using NUnit.Framework;
 using UnityEngine;
@@ -12,7 +13,8 @@ public sealed class MovementTest
         grid._size = new(4, 4);
         var playerPos = new Vector2Int(1, 1);
 
-        var results = Moves.GetValidMovesDiagonal(grid, playerPos);
+        var results = new List<Vector2Int>();
+        Moves.GetValidMovesDiagonal(results, grid, playerPos);
         Assert.That(results, Is.EqualTo(new Vector2Int[]
         {
             new(2, 2),
