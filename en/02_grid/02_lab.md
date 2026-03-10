@@ -37,7 +37,7 @@ Optionally:
 Optionally:
 - Add a sound effect when trying to select a cell that's not movable to.
 
-## 4. Animation
+## 4. (Optional) Animation
 
 - Use linear interpolation between the start and the end point of the player's
   path to animate its movement.
@@ -53,9 +53,9 @@ Optionally:
 - Procedurally add obstacles.
 - Store them or just their positions in a list.
 - Make obstacles block movement for the player.
-- Make the player be able to destroy the closest obstacle on their path.
 
 Optionally:
+- Make the player be able to destroy the closest obstacle on their path.
 - Make different kinds of obstacles that do or do not get destroyed by the player.
 - Add sound effects and/or particle effects on destruction.
 
