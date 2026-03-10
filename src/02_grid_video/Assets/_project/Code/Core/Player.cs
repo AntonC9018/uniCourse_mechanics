@@ -1,10 +1,12 @@
-using System;
 using UnityEngine;
 
 namespace Core
 {
+    [DefaultExecutionOrder(ExecutionOrder)]
     public sealed class Player : MonoBehaviour
     {
+        public const int ExecutionOrder = 100;
+
         [SerializeField] private CellTargeting _cellTargeting = null!;
         [SerializeField] private Grid _grid = null!;
         [SerializeField] private CellHighlighting _cellHigh = null!;
@@ -32,6 +34,9 @@ namespace Core
 
         private void Start()
         {
+            #if UNITY_EDITOR
+            _started = true;
+            #endif
             HighlightMoves();
         }
 
@@ -41,13 +46,21 @@ namespace Core
             DoPlayerMouseMovement();
         }
 
+        #if UNITY_EDITOR
+        private bool _started = false;
+
         private void OnValidate()
         {
+            if (!_started)
+            {
+                return;
+            }
             if (Application.isPlaying)
             {
                 HighlightMoves();
             }
         }
+        #endif
 
         private void SwitchMoveSet()
         {

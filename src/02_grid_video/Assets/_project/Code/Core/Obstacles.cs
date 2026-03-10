@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Core
 {
+    [DefaultExecutionOrder(Player.ExecutionOrder - 1)]
     public sealed class Obstacles : MonoBehaviour
     {
         [SerializeField] private Grid _grid = null!;
@@ -10,6 +11,7 @@ namespace Core
         [SerializeField] private Player _player = null!;
 
         private readonly List<Obstacle> _obstacles = new();
+        private LookupDataStructure _lookupDataStructure;
 
         private void Start()
         {
@@ -30,6 +32,8 @@ namespace Core
                     GridPosition = gridPos,
                 });
             }
+
+            _lookupDataStructure = LookupDataStructure.Create(_grid.Size, _obstacles);
         }
 
         private Vector2Int GetRandomPositionForObstacle()
@@ -69,12 +73,9 @@ namespace Core
 
         public bool HasObstacleAt(Vector2Int pos)
         {
-            foreach (var ob in _obstacles)
+            if (_lookupDataStructure.Check(pos))
             {
-                if (ob.GridPosition == pos)
-                {
-                    return true;
-                }
+                return true;
             }
             return false;
         }
@@ -84,5 +85,51 @@ namespace Core
     {
         // public Transform Transform;
         public Vector2Int GridPosition;
+    }
+
+    public readonly struct LookupDataStructure
+    {
+        private readonly bool[][] _impl;
+        private LookupDataStructure(bool[][] impl) => _impl = impl;
+
+        private ref bool Ref(Vector2Int pos)
+        {
+            return ref _impl[pos.y][pos.x];
+        }
+
+        public bool Check(Vector2Int pos)
+        {
+            if (Ref(pos))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void Set(Vector2Int pos)
+        {
+            Ref(pos) = true;
+        }
+
+        public static LookupDataStructure Create(
+            Vector2Int size,
+            List<Obstacle> obstacles)
+        {
+            var arr = new bool[size.y][];
+            for (int rowIndex = 0; rowIndex < arr.Length; rowIndex++)
+            {
+                arr[rowIndex] = new bool[size.x];
+            }
+
+            var ret = new LookupDataStructure(arr);
+
+            foreach (var ob in obstacles)
+            {
+                var pos = ob.GridPosition;
+                ret.Set(pos);
+            }
+
+            return new(arr);
+        }
     }
 }
