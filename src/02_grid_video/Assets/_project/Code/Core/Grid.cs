@@ -1,4 +1,8 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Assertions;
+
+[assembly: InternalsVisibleTo("Core.Tests")]
 
 namespace Core
 {
@@ -6,7 +10,7 @@ namespace Core
     {
         [SerializeField]
         [Min(1)]
-        private Vector2Int _size = new(10, 10);
+        internal Vector2Int _size = new(10, 10);
 
         public Vector2Int Size => _size;
 
@@ -26,6 +30,13 @@ namespace Core
             return result;
         }
 
+        public Vector2Int WorldToGridOfCellOrigin(Vector3 posWorldSpace)
+        {
+            var gridSpace = WorldToGrid(posWorldSpace);
+            var ret = MakeSureCellOrigin(gridSpace);
+            return ret;
+        }
+
         public Vector2Int SnapToCellOrigin(Vector2 gridPos)
         {
             Vector2Int ret = default;
@@ -34,21 +45,48 @@ namespace Core
             return ret;
         }
 
+        public Vector2Int MakeSureCellOrigin(Vector2 gridPos)
+        {
+            Assert.AreEqual(gridPos.x, Mathf.Floor(gridPos.x));
+            Assert.AreEqual(gridPos.y, Mathf.Floor(gridPos.y));
+            var ret = SnapToCellOrigin(gridPos);
+            return ret;
+        }
+
+        public bool IsInGrid(Vector2Int gridPos)
+        {
+            if (gridPos.x < 0)
+            {
+                return false;
+            }
+            if (gridPos.x >= _size.x)
+            {
+                return false;
+            }
+            if (gridPos.y < 0)
+            {
+                return false;
+            }
+            if (gridPos.y >= _size.y)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public Transform? FindCellAt(Vector2Int gridPos)
         {
-            foreach (Transform cell in transform)
+            int index = gridPos.y * _size.x + gridPos.x;
+            if (index >= transform.childCount)
             {
-                Vector2 fpos = cell.position;
-                Vector2Int pos = default;
-                pos.x = (int) fpos.x;
-                pos.y = (int) fpos.y;
-
-                if (pos == gridPos)
-                {
-                    return cell;
-                }
+                return null;
             }
-            return null;
+            if (index < 0)
+            {
+                return null;
+            }
+            var ret = transform.GetChild(index);
+            return ret;
         }
     }
 

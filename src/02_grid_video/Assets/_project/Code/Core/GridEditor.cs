@@ -61,22 +61,21 @@ namespace Core
                 for (int x = 0; x < size.x; x++)
                 {
                     var gridPos = new Vector2(x, y);
-                    var worldPos = _grid.GridToWorld(gridPos);
-
-                    var cell = Instantiate(_cellPrefab);
-                    cell.name = $"x={x}, y={y}";
-
-                    var renderer_ = CellHelper.GetSpriteRenderer(cell);
                     float spriteValue = Mathf.PerlinNoise(x * _cellSpriteChangeFactor, y * _cellSpriteChangeFactor);
                     int spriteIndex = Mathf.FloorToInt(spriteValue * _cellSprites.Length);
                     spriteIndex = Math.Clamp(spriteIndex, 0, _cellSprites.Length - 1);
 
+                    var worldPos = _grid.GridToWorld(gridPos);
+                    var cell = Instantiate(_cellPrefab);
+                    cell.name = $"x={x}, y={y}";
+
+                    var renderer_ = CellHelper.GetSpriteRenderer(cell);
                     renderer_.sprite = _cellSprites[spriteIndex];
 
                     Vector3 pos;
                     pos.x = worldPos.x;
                     pos.y = worldPos.y;
-                    pos.z = 1;
+                    pos.z = 0;
 
                     var cellt = cell.transform;
                     cellt.position = pos;
@@ -85,10 +84,26 @@ namespace Core
                 }
             }
 
+            SetupCamera();
+        }
+
+        private void SetupCamera()
+        {
+            var size = _grid.Size;
             var gridCenter = ((Vector2) size) / 2;
             Vector3 gridCenterInWorldSpace = _grid.GridToWorld(gridCenter);
             gridCenterInWorldSpace.z = -1;
-            _camera.transform.position = gridCenterInWorldSpace;
+
+            var ct = _camera.transform;
+            Undo.RecordObject(ct, "Reset camera position");
+            ct.position = gridCenterInWorldSpace;
+
+
+            Undo.RecordObject(_camera, "Projection");
+            _camera.orthographic = true;
+            _camera.orthographicSize = (float) size.y / 2;
+            _camera.nearClipPlane = -1;
+            _camera.farClipPlane = 1;
         }
     }
 }
