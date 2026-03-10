@@ -37,7 +37,7 @@ Optionally:
 Optionally:
 - Add a sound effect when trying to select a cell that's not movable to.
 
-## 4. (Optional) Animation
+## 4. Animation (optional)
 
 - Use linear interpolation between the start and the end point of the player's
   path to animate its movement.
