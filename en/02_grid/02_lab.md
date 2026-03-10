@@ -1,5 +1,8 @@
 # Lab 2
 
+- [Videos (ru)](https://www.youtube.com/watch?v=Ld4d6fNzGjw&list=PL4sUOB8DjVlV5CyKBtPuIinU4f6wp5BCa)
+- [Videos (ro)](https://www.youtube.com/watch?v=bD_kgpS8Zmc&list=PL4sUOB8DjVlUwd7Nqt2QcTsdeEXslwc-u&index=1)
+
 > You may choose to do this assignment in pairs,
 > one person implementing the mechanics and another 
 > making it more visually appealing.
