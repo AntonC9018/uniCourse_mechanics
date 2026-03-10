@@ -89,17 +89,12 @@ namespace Core
 
     public readonly struct LookupDataStructure
     {
-        private readonly bool[][] _impl;
-        private LookupDataStructure(bool[][] impl) => _impl = impl;
-
-        private ref bool Ref(Vector2Int pos)
-        {
-            return ref _impl[pos.y][pos.x];
-        }
+        private readonly HashSet<Vector2Int> _impl;
+        private LookupDataStructure(HashSet<Vector2Int> impl) => _impl = impl;
 
         public bool Check(Vector2Int pos)
         {
-            if (Ref(pos))
+            if (_impl.Contains(pos))
             {
                 return true;
             }
@@ -108,19 +103,15 @@ namespace Core
 
         private void Set(Vector2Int pos)
         {
-            Ref(pos) = true;
+            _impl.Add(pos);
         }
 
         public static LookupDataStructure Create(
             Vector2Int size,
             List<Obstacle> obstacles)
         {
-            var arr = new bool[size.y][];
-            for (int rowIndex = 0; rowIndex < arr.Length; rowIndex++)
-            {
-                arr[rowIndex] = new bool[size.x];
-            }
-
+            _ = size;
+            var arr = new HashSet<Vector2Int>(obstacles.Count);
             var ret = new LookupDataStructure(arr);
 
             foreach (var ob in obstacles)

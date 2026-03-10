@@ -76,17 +76,17 @@ namespace Core
 
         public Transform? FindCellAt(Vector2Int gridPos)
         {
-            foreach (Transform cell in transform)
+            int index = gridPos.y * _size.x + gridPos.x;
+            if (index >= transform.childCount)
             {
-                Vector2 fposWorldSpace = cell.position;
-                Vector2 fposGridSpace = WorldToGrid(fposWorldSpace);
-                var pos = MakeSureCellOrigin(fposGridSpace);
-                if (pos == gridPos)
-                {
-                    return cell;
-                }
+                return null;
             }
-            return null;
+            if (index < 0)
+            {
+                return null;
+            }
+            var ret = transform.GetChild(index);
+            return ret;
         }
     }
 
