@@ -14,7 +14,7 @@ public sealed class MovementTest
         var playerPos = new Vector2Int(1, 1);
 
         var results = new List<Vector2Int>();
-        Moves.GetValidMovesDiagonal(results, grid, playerPos);
+        Moves.GetAllDiagonalPosition(results, grid, playerPos);
         Assert.That(results, Is.EqualTo(new Vector2Int[]
         {
             new(2, 2),

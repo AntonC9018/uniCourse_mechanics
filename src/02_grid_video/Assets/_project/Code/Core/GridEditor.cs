@@ -61,16 +61,15 @@ namespace Core
                 for (int x = 0; x < size.x; x++)
                 {
                     var gridPos = new Vector2(x, y);
-                    var worldPos = _grid.GridToWorld(gridPos);
-
-                    var cell = Instantiate(_cellPrefab);
-                    cell.name = $"x={x}, y={y}";
-
-                    var renderer_ = CellHelper.GetSpriteRenderer(cell);
                     float spriteValue = Mathf.PerlinNoise(x * _cellSpriteChangeFactor, y * _cellSpriteChangeFactor);
                     int spriteIndex = Mathf.FloorToInt(spriteValue * _cellSprites.Length);
                     spriteIndex = Math.Clamp(spriteIndex, 0, _cellSprites.Length - 1);
 
+                    var worldPos = _grid.GridToWorld(gridPos);
+                    var cell = Instantiate(_cellPrefab);
+                    cell.name = $"x={x}, y={y}";
+
+                    var renderer_ = CellHelper.GetSpriteRenderer(cell);
                     renderer_.sprite = _cellSprites[spriteIndex];
 
                     Vector3 pos;

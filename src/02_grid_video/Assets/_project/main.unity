@@ -1901,6 +1901,8 @@ MonoBehaviour:
   _grid: {fileID: 437789654}
   _cellHigh: {fileID: 437789657}
   _availableMoveColor: {r: 0.96981126, g: 0.13166513, b: 0, a: 1}
+  _playerMoves: {fileID: 1811409350}
+  _maxDistance: 13
 --- !u!1 &259460085
 GameObject:
   m_ObjectHideFlags: 0
@@ -7496,6 +7498,53 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &1373162760
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1373162761}
+  - component: {fileID: 1373162762}
+  m_Layer: 0
+  m_Name: obstacles
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1373162761
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1373162760}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1373162762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1373162760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65f51fffcb8b4bc28877d14696653858, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.Obstacles
+  _grid: {fileID: 437789654}
+  _obstaclePrefab: {fileID: 4379026058190660136, guid: 054a64b364a7d324ca030fb64f4ad5cb, type: 3}
+  _player: {fileID: 253202645}
 --- !u!1 &1376849470
 GameObject:
   m_ObjectHideFlags: 0
@@ -9875,6 +9924,52 @@ Transform:
   - {fileID: 650076182}
   m_Father: {fileID: 437789653}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1811409349
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1811409351}
+  - component: {fileID: 1811409350}
+  m_Layer: 0
+  m_Name: services
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1811409350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1811409349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 084da34c6f0747058cb9958b11dc9777, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Core::Core.PlayerMovesService
+  _grid: {fileID: 437789654}
+  _obstacles: {fileID: 1373162762}
+--- !u!4 &1811409351
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1811409349}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1812708737
 GameObject:
   m_ObjectHideFlags: 0
@@ -11766,3 +11861,5 @@ SceneRoots:
   - {fileID: 199510595}
   - {fileID: 437789653}
   - {fileID: 253202644}
+  - {fileID: 1373162761}
+  - {fileID: 1811409351}
