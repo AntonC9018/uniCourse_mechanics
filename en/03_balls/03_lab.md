@@ -49,7 +49,7 @@
 ### 1.4. Add another ball
 
 - Make the program work for any number of balls.
-  Currently, don't simulate collisions between balls.
+  At this point, don't simulate collisions between balls.
 
 ## 2. Collisions between multiple balls
 
@@ -67,7 +67,12 @@
 
 - Add mass to objects.
 - Use the laws of conservation of momentum and conservation of energy
-  to implement proper momentum transfer between objects.
+  to derive the momentum transfer formulas for elastic collisions.
+- Implement proper momentum transfer between objects,
+  without energy loss.
+
+Advanced:
+- Implement energy loss during a collision event (non-elastic collisions).
   
 ### 2.3. Broad phase optimizations
 
@@ -79,9 +84,9 @@ Optionally:
 - Implement partitioning by constructing a Quadtree.
 
 
-### 2.4. (Advanced) Continuous Collision Detection
+### 2.4. (Advanced, Optional) Continuous Collision Detection
 
-- Try setting the objects' velocity to high value 
+- Try setting the objects' velocity to a high value 
   and observe them pass through each other.
   Set up a test for this.
   This is called tunneling.
