@@ -1,20 +1,20 @@
 using System.Collections.Generic;
-using UnityEngine.Assertions;
 using UnityEngine;
 
 namespace Core
 {
+    [DefaultExecutionOrder(HighController.ExecutionOrder - 1)]
     public sealed class Player : MonoBehaviour
     {
         [SerializeField] private CellTargeting _cellTargeting = null!;
         [SerializeField] private Grid _grid = null!;
-
-        private List<SpriteRenderer> _highCells = new();
+        [SerializeField] private HighController _highController = null!;
         private List<Vector2Int> _validMoves = new();
 
         private void Start()
         {
             GetValidMoves(_validMoves);
+            HighValidMoves();
         }
 
         private void Update()
@@ -22,29 +22,16 @@ namespace Core
             if (TryMove())
             {
                 GetValidMoves(_validMoves);
+                HighValidMoves();
             }
-            HighValidMoves();
         }
 
         private void HighValidMoves()
         {
-            foreach (var h in _highCells)
-            {
-                h.color = Color.white;
-            }
-            _highCells.Clear();
-
-            var validMoves = _validMoves;
-            foreach (var m in validMoves)
-            {
-                var cell = _grid.FindCellAt(m);
-                Assert.IsNotNull(cell);
-
-                var r = CellHelper.GetSpriteRenderer(cell!.gameObject);
-                r.color = Color.crimson;
-
-                _highCells.Add(r);
-            }
+            var group = _highController.Group(HighGroup.ValidMoves);
+            group.Clear();
+            group.SetColor(Color.crimson);
+            group.High(_validMoves);
         }
 
         private void GetValidMoves(List<Vector2Int> list)

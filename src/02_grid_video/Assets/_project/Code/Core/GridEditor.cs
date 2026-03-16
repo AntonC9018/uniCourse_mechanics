@@ -101,7 +101,16 @@ namespace Core
 
             Undo.RecordObject(_camera, "Projection");
             _camera.orthographic = true;
-            _camera.orthographicSize = (float) size.y / 2;
+
+            float GetOrthoSize()
+            {
+                var ar = (float) _camera.pixelHeight / _camera.pixelWidth;
+                var fx = (float) ar * size.x;
+                var fy = (float) size.y;
+                var f = Mathf.Max(fx, fy);
+                return f / 2;
+            }
+            _camera.orthographicSize = GetOrthoSize();
             _camera.nearClipPlane = -1;
             _camera.farClipPlane = 1;
         }
