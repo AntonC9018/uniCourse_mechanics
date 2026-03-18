@@ -40,8 +40,28 @@ namespace Core
             HighlightMoves();
         }
 
+        [SerializeField]
+        private AnimationService _animationService = new()
+        {
+            AnimationTimeInSeconds = 1,
+        };
+
         private void Update()
         {
+            var state = _animationService.TryAnimate();
+            switch (state)
+            {
+                case AnimationState.IsAnimating:
+                {
+                    return;
+                }
+                case AnimationState.Finished:
+                {
+                    HighlightMoves();
+                    break;
+                }
+            }
+
             SwitchMoveSet();
             DoPlayerMouseMovement();
         }
@@ -84,8 +104,9 @@ namespace Core
             var availableMovesInGridSpace = SaveValidMoves().Positions;
 
             var layer = _cellHigh.ModifyLayer(HighlightLayer.AvailableMoves);
-            layer.SetColor(_availableMoveColor);
             layer.Clear();
+
+            layer.SetColor(_availableMoveColor);
             foreach (var h in availableMovesInGridSpace)
             {
                layer.AddHigh(h);
@@ -119,9 +140,10 @@ namespace Core
             var t = transform;
             Vector3 playerNewWorldPos = _grid.GridToWorld(cellPositionGridSpace);
             playerNewWorldPos.z = t.position.z;
-            t.position = playerNewWorldPos;
+            _animationService.Start(t, t.position, playerNewWorldPos);
 
-            HighlightMoves();
+            var layer = _cellHigh.ModifyLayer(HighlightLayer.AvailableMoves);
+            layer.Clear();
         }
     }
 }
