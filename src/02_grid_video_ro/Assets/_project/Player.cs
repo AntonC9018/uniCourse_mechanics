@@ -1,29 +1,53 @@
-using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Core
 {
+    public enum MoveSet
+    {
+        Orthogonal = 0,
+        Diagonal = 1,
+        Queen = 2,
+        Count,
+    }
+
     [DefaultExecutionOrder(HighController.ExecutionOrder - 1)]
     public sealed class Player : MonoBehaviour
     {
         [SerializeField] private CellTargeting _cellTargeting = null!;
         [SerializeField] private Grid _grid = null!;
         [SerializeField] private HighController _highController = null!;
-        private List<Vector2Int> _validMoves = new();
+        [SerializeField] private MoveSelection _moveSelection = null!;
+        private MoveSet _moveSet = MoveSet.Orthogonal;
 
         private void Start()
         {
-            GetValidMoves(_validMoves);
-            HighValidMoves();
+            ResetValidMoves();
         }
 
         private void Update()
         {
+            if (TryChangeMoveSet())
+            {
+                ResetValidMoves();
+            }
+
             if (TryMove())
             {
-                GetValidMoves(_validMoves);
-                HighValidMoves();
+                ResetValidMoves();
             }
+        }
+
+        private bool TryChangeMoveSet()
+        {
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                int i = (int) _moveSet;
+                i = (i + 1) % (int) MoveSet.Count;
+                _moveSet = (MoveSet) i;
+                return true;
+            }
+            return false;
         }
 
         private void HighValidMoves()
@@ -31,33 +55,17 @@ namespace Core
             var group = _highController.Group(HighGroup.ValidMoves);
             group.Clear();
             group.SetColor(Color.crimson);
-            group.High(_validMoves);
+            group.High(_moveSelection.SelectedValidMoves);
         }
 
-        private void GetValidMoves(List<Vector2Int> list)
+        private void ResetValidMoves()
         {
-            list.Clear();
-
             var playerTransform = transform;
             var playerGridSpace = _grid.WorldToGrid(playerTransform.position);
             var playerGridSpaceInt = _grid.MakeSureCellOrigin(playerGridSpace);
+            _moveSelection.ResetMoves(playerGridSpaceInt, _moveSet);
 
-            Vector2Int dir = new(1, 0);
-            for (int i = 0; i < 4; i++)
-            {
-                var currentPos = playerGridSpaceInt;
-                while (true)
-                {
-                    currentPos += dir;
-                    if (!_grid.IsInGrid(currentPos))
-                    {
-                        break;
-                    }
-                    list.Add(currentPos);
-                }
-
-                dir = new(x: -dir.y, y: dir.x);
-            }
+            HighValidMoves();
         }
 
         private bool TryMove()
@@ -74,12 +82,9 @@ namespace Core
                 return false;
             }
 
-            var playerTransform = transform;
-            var playerGridSpace = _grid.WorldToGrid(playerTransform.position);
-            var playerGridSpaceInt = _grid.MakeSureCellOrigin(playerGridSpace);
-            var diff = targetPosInGridSpace - playerGridSpaceInt;
-            if (diff.x == 0 || diff.y == 0)
+            if (_moveSelection.CheckValidMove(targetPosInGridSpace))
             {
+                var playerTransform = transform;
                 var pos = playerTransform.position;
                 Vector3 playerNewPosInWorldSpace = _grid.GridToWorld(targetPosInGridSpace);
                 playerNewPosInWorldSpace.z = pos.z;

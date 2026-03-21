@@ -3678,6 +3678,7 @@ GameObject:
   m_Component:
   - component: {fileID: 656744526}
   - component: {fileID: 656744527}
+  - component: {fileID: 656744528}
   m_Layer: 0
   m_Name: player
   m_TagString: Untagged
@@ -3716,6 +3717,20 @@ MonoBehaviour:
   _cellTargeting: {fileID: 2020238452}
   _grid: {fileID: 2020238450}
   _highController: {fileID: 618449456}
+  _moveSelection: {fileID: 656744528}
+--- !u!114 &656744528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 656744525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecc6307110144dc69bf169e1caea3458, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Core.MoveSelection
+  _grid: {fileID: 2020238450}
 --- !u!1 &667202097
 GameObject:
   m_ObjectHideFlags: 0
