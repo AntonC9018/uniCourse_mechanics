@@ -7,6 +7,7 @@ namespace Core
     public sealed class MoveSelection : MonoBehaviour
     {
         [SerializeField] private Grid _grid = null!;
+        public int MaxDistance = 3;
         public List<Vector2Int> SelectedValidMoves { get; } = new();
 
         public bool CheckValidMove(Vector2Int pos)
@@ -65,8 +66,15 @@ namespace Core
             for (int i = 0; i < 4; i++)
             {
                 var currentPos = playerGridPos;
+                int currentDist = 0;
                 while (true)
                 {
+                    if (currentDist >= MaxDistance)
+                    {
+                        break;
+                    }
+                    currentDist++;
+
                     currentPos += dir;
                     if (!_grid.IsInGrid(currentPos))
                     {
