@@ -64,18 +64,14 @@ namespace Core
 
         public Transform? FindCellAt(Vector2Int cellOriginPos)
         {
-            foreach (Transform cell in transform)
+            if (!IsInGrid(cellOriginPos))
             {
-                var cellWorldPos = cell.position;
-                var cellGridPos = WorldToGrid(cellWorldPos);
-                var gridPosInt = MakeSureCellOrigin(cellGridPos);
-
-                if (cellOriginPos == gridPosInt)
-                {
-                    return cell;
-                }
+                return null;
             }
-            return null;
+            int seqPos = cellOriginPos.x + cellOriginPos.y * Size.x;
+            var ret = transform.GetChild(seqPos);
+            Assert.IsNotNull(ret);
+            return ret;
         }
     }
 

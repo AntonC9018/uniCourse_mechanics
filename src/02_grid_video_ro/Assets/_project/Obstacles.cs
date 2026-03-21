@@ -75,33 +75,30 @@ namespace Core
 
     public readonly struct LookupDataStructure
     {
-        private readonly bool[][] _uniformGrid;
+        private readonly HashSet<Vector2Int> _set;
 
-        private LookupDataStructure(bool[][] uniformGrid)
+        private LookupDataStructure(HashSet<Vector2Int> set)
         {
-            _uniformGrid = uniformGrid;
+            _set = set;
         }
 
         public static LookupDataStructure Create(
             Grid grid,
             List<Vector2Int> occupied)
         {
-            var uniformGrid = new bool[grid.Size.y][];
-            for (int rowIndex = 0; rowIndex < uniformGrid.Length; rowIndex++)
-            {
-                uniformGrid[rowIndex] = new bool[grid.Size.x];
-            }
+            _ = grid;
 
+            var s = new HashSet<Vector2Int>(occupied.Count);
             foreach (var o in occupied)
             {
-                uniformGrid[o.y][o.x] = true;
+                s.Add(o);
             }
-            return new(uniformGrid);
+            return new(s);
         }
 
         public bool Check(Vector2Int v)
         {
-            bool exists = _uniformGrid[v.y][v.x];
+            bool exists = _set.Contains(v);
             return exists;
         }
     }

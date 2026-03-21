@@ -49,9 +49,9 @@ namespace Core
             }
 
             var size = _grid.Size;
-            for (int x = 0; x < size.x; x++)
+            for (int y = 0; y < size.y; y++)
             {
-                for (int y = 0; y < size.y; y++)
+                for (int x = 0; x < size.x; x++)
                 {
                     Vector2 gridPos = new(x, y);
                     var worldPos = _grid.GridToWorld(gridPos);
