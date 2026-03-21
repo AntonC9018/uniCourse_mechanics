@@ -4,9 +4,19 @@ using UnityEngine.Assertions;
 
 namespace Core
 {
+    public enum MoveSet
+    {
+        Orthogonal = 0,
+        Diagonal = 1,
+        Queen = 2,
+        Count,
+    }
+
     public sealed class MoveSelection : MonoBehaviour
     {
         [SerializeField] private Grid _grid = null!;
+        [SerializeField] private Obstacles _obstacles = null!;
+
         public int MaxDistance = 3;
         public List<Vector2Int> SelectedValidMoves { get; } = new();
 
@@ -77,6 +87,10 @@ namespace Core
 
                     currentPos += dir;
                     if (!_grid.IsInGrid(currentPos))
+                    {
+                        break;
+                    }
+                    if (_obstacles.HasObstacleAt(currentPos))
                     {
                         break;
                     }

@@ -61,9 +61,13 @@ namespace Core
 
                     var cell = GameObject.Instantiate(
                         _cellPrefab,
-                        parent: parent,
                         position: worldPos3,
-                        rotation: Quaternion.identity);
+                        rotation: Quaternion.identity,
+                        parameters: new()
+                        {
+                            worldSpace = false,
+                            parent = parent,
+                        });
                     cell.name = $"x={gridPos.x},y={gridPos.y}";
 
                     var perlinCoords = _spriteChangeRate * gridPos + _spriteChangeSeed;

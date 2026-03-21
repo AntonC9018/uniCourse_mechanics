@@ -3,17 +3,10 @@ using UnityEngine;
 
 namespace Core
 {
-    public enum MoveSet
-    {
-        Orthogonal = 0,
-        Diagonal = 1,
-        Queen = 2,
-        Count,
-    }
-
-    [DefaultExecutionOrder(HighController.ExecutionOrder - 1)]
+    [DefaultExecutionOrder(ExecutionOrder)]
     public sealed class Player : MonoBehaviour
     {
+        public const int ExecutionOrder = HighController.ExecutionOrder - 1;
         [SerializeField] private CellTargeting _cellTargeting = null!;
         [SerializeField] private Grid _grid = null!;
         [SerializeField] private HighController _highController = null!;
