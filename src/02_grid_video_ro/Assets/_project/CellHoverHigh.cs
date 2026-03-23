@@ -2,34 +2,25 @@ using UnityEngine;
 
 namespace Core
 {
+    [DefaultExecutionOrder(HighController.ExecutionOrder - 1)]
     public sealed class CellHoverHigh : MonoBehaviour
     {
         [SerializeField] private Grid _grid = null!;
         [SerializeField] private CellTargeting _cellTargeting = null!;
-
-        private SpriteRenderer? _highlightedCell = null;
+        [SerializeField] private HighController _highController = null!;
 
         void Update()
         {
-            if (_highlightedCell != null)
-            {
-                _highlightedCell.color = Color.white;
-            }
+            var group = _highController.Group(HighGroup.Hover);
 
             var cellPosInGridSpace = _cellTargeting.GetCellPositionOfMouse();
             if (!_grid.IsInGrid(cellPosInGridSpace))
             {
+                group.Clear();
                 return;
             }
-            var cell = _grid.FindCellAt(cellPosInGridSpace);
-            if (cell == null)
-            {
-                return;
-            }
-
-            var renderer1 = CellHelper.GetSpriteRenderer(cell.gameObject);
-            renderer1.color = Color.green;
-            _highlightedCell = renderer1;
+            group.SetColor(Color.green);
+            group.ResetHigh(cellPosInGridSpace);
         }
     }
 }

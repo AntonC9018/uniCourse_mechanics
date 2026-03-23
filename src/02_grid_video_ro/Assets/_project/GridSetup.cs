@@ -49,9 +49,9 @@ namespace Core
             }
 
             var size = _grid.Size;
-            for (int x = 0; x < size.x; x++)
+            for (int y = 0; y < size.y; y++)
             {
-                for (int y = 0; y < size.y; y++)
+                for (int x = 0; x < size.x; x++)
                 {
                     Vector2 gridPos = new(x, y);
                     var worldPos = _grid.GridToWorld(gridPos);
@@ -61,9 +61,13 @@ namespace Core
 
                     var cell = GameObject.Instantiate(
                         _cellPrefab,
-                        parent: parent,
                         position: worldPos3,
-                        rotation: Quaternion.identity);
+                        rotation: Quaternion.identity,
+                        parameters: new()
+                        {
+                            worldSpace = false,
+                            parent = parent,
+                        });
                     cell.name = $"x={gridPos.x},y={gridPos.y}";
 
                     var perlinCoords = _spriteChangeRate * gridPos + _spriteChangeSeed;

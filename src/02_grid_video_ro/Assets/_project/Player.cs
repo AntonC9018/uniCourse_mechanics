@@ -1,76 +1,64 @@
-using System.Collections.Generic;
-using UnityEngine.Assertions;
+using UnityEditor;
 using UnityEngine;
 
 namespace Core
 {
+    [DefaultExecutionOrder(ExecutionOrder)]
     public sealed class Player : MonoBehaviour
     {
+        public const int ExecutionOrder = HighController.ExecutionOrder - 1;
         [SerializeField] private CellTargeting _cellTargeting = null!;
         [SerializeField] private Grid _grid = null!;
-
-        private List<SpriteRenderer> _highCells = new();
-        private List<Vector2Int> _validMoves = new();
+        [SerializeField] private HighController _highController = null!;
+        [SerializeField] private MoveSelection _moveSelection = null!;
+        private MoveSet _moveSet = MoveSet.Orthogonal;
 
         private void Start()
         {
-            GetValidMoves(_validMoves);
+            ResetValidMoves();
         }
 
         private void Update()
         {
+            if (TryChangeMoveSet())
+            {
+                ResetValidMoves();
+            }
+
             if (TryMove())
             {
-                GetValidMoves(_validMoves);
+                ResetValidMoves();
             }
-            HighValidMoves();
+        }
+
+        private bool TryChangeMoveSet()
+        {
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                int i = (int) _moveSet;
+                i = (i + 1) % (int) MoveSet.Count;
+                _moveSet = (MoveSet) i;
+                return true;
+            }
+            return false;
         }
 
         private void HighValidMoves()
         {
-            foreach (var h in _highCells)
-            {
-                h.color = Color.white;
-            }
-            _highCells.Clear();
-
-            var validMoves = _validMoves;
-            foreach (var m in validMoves)
-            {
-                var cell = _grid.FindCellAt(m);
-                Assert.IsNotNull(cell);
-
-                var r = CellHelper.GetSpriteRenderer(cell!.gameObject);
-                r.color = Color.crimson;
-
-                _highCells.Add(r);
-            }
+            var group = _highController.Group(HighGroup.ValidMoves);
+            group.Clear();
+            group.SetColor(Color.crimson);
+            group.High(_moveSelection.SelectedValidMoves);
         }
 
-        private void GetValidMoves(List<Vector2Int> list)
+        private void ResetValidMoves()
         {
-            list.Clear();
-
             var playerTransform = transform;
             var playerGridSpace = _grid.WorldToGrid(playerTransform.position);
             var playerGridSpaceInt = _grid.MakeSureCellOrigin(playerGridSpace);
+            _moveSelection.ResetMoves(playerGridSpaceInt, _moveSet);
 
-            Vector2Int dir = new(1, 0);
-            for (int i = 0; i < 4; i++)
-            {
-                var currentPos = playerGridSpaceInt;
-                while (true)
-                {
-                    currentPos += dir;
-                    if (!_grid.IsInGrid(currentPos))
-                    {
-                        break;
-                    }
-                    list.Add(currentPos);
-                }
-
-                dir = new(x: -dir.y, y: dir.x);
-            }
+            HighValidMoves();
         }
 
         private bool TryMove()
@@ -87,12 +75,9 @@ namespace Core
                 return false;
             }
 
-            var playerTransform = transform;
-            var playerGridSpace = _grid.WorldToGrid(playerTransform.position);
-            var playerGridSpaceInt = _grid.MakeSureCellOrigin(playerGridSpace);
-            var diff = targetPosInGridSpace - playerGridSpaceInt;
-            if (diff.x == 0 || diff.y == 0)
+            if (_moveSelection.CheckValidMove(targetPosInGridSpace))
             {
+                var playerTransform = transform;
                 var pos = playerTransform.position;
                 Vector3 playerNewPosInWorldSpace = _grid.GridToWorld(targetPosInGridSpace);
                 playerNewPosInWorldSpace.z = pos.z;
