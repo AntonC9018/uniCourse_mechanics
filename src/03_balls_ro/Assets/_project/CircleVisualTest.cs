@@ -4,16 +4,9 @@ using UnityEngine.Serialization;
 
 namespace VisualTests
 {
-    public sealed class Ball
-    {
-        public Vector2 Position;
-        public float Radius;
-        public Color Color;
-    }
-
     public sealed class CircleVisualTest : MonoBehaviour
     {
-        [SerializeField] private Transform _circlePrefab = null!;
+        [SerializeField] private BallSpawner _circleSpawner = null!;
 
         [FormerlySerializedAs("Scale")]
         public AnimatedValueConfig Radius = new()
@@ -40,7 +33,7 @@ namespace VisualTests
             _circleTransforms = new Transform[_balls.Length];
             for (int i = 0; i < _balls.Length; i++)
             {
-                var t = Instantiate(_circlePrefab);
+                var t = _circleSpawner.SpawnBall();
                 _circleTransforms[i] = t;
             }
 
@@ -80,23 +73,11 @@ namespace VisualTests
 
             for (int i = 0; i < _balls.Length; i++)
             {
-                Apply(_balls[i], _circleTransforms[i]);
+                BallEntity e = new(_balls[i], _circleTransforms[i]);
+                BallHelper.Apply(e);
             }
         }
 
-        private static void Apply(Ball ball, Transform transform)
-        {
-            Vector3 pos = ball.Position;
-            pos.z = transform.position.z;
-            transform.position = pos;
-
-            var scale = ball.Radius;
-            var scaleVector = new Vector3(scale, scale, scale);
-            transform.localScale = scaleVector;
-
-            var renderer_ = transform.gameObject.GetComponent<SpriteRenderer>();
-            renderer_.color = ball.Color;
-        }
 
         private static float GetAnimatedValue(AnimatedValueConfig config)
         {

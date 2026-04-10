@@ -212,6 +212,8 @@ GameObject:
   m_Component:
   - component: {fileID: 671345811}
   - component: {fileID: 671345810}
+  - component: {fileID: 671345812}
+  - component: {fileID: 671345813}
   m_Layer: 0
   m_Name: logic
   m_TagString: Untagged
@@ -226,12 +228,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 671345809}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 07218491c6070234a8bba4af7f956c66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CircleVisualTest
-  _circlePrefab: {fileID: 2240989108883600547, guid: 0653b706d2a2b5048b5b3f9687e69fbb, type: 3}
+  _circleSpawner: {fileID: 671345812}
   Radius:
     ChangeRate: 1
     Min: 1
@@ -240,10 +242,11 @@ MonoBehaviour:
     ChangeRate: 1
     Min: -10
     Max: 5
-  Red:
-    ChangeRate: 1
-    Min: 0
-    Max: 1
+  ColorChangeRate: 5
+  _colors:
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0, g: 0.09589863, b: 1, a: 1}
 --- !u!4 &671345811
 Transform:
   m_ObjectHideFlags: 0
@@ -259,6 +262,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &671345812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671345809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efeb68fa3f6d48e0a5d5fedaa66b2903, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VisualTests.BallSpawner
+  _ballPrefab: {fileID: 2240989108883600547, guid: 0653b706d2a2b5048b5b3f9687e69fbb, type: 3}
+--- !u!114 &671345813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671345809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54c6a01203ac49629e234d4aad15dce5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VisualTests.MainLogic
+  _spawner: {fileID: 671345812}
+  _camera: {fileID: 573517331}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
