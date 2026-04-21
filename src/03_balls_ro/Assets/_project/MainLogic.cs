@@ -32,10 +32,6 @@ namespace VisualTests
             {
                 var halfHeightInWorld = _camera.orthographicSize;
                 float aspectRatio = _camera.aspect;
-
-                // var w = pixelHeight / (halfHeightInWorld * 2);
-                // rightWallX = pixelWidth / (w * 2);
-
                 rightWallX = aspectRatio * halfHeightInWorld;
             }
             if (ballRight > rightWallX)
