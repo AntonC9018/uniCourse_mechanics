@@ -56,12 +56,14 @@
 ### 2.1. No mass
 
 - Make a function that checks if two balls collide.
-- Make a function that finds the point of collision of two objects,
-  and the line tangent both balls at that point.
+- Make a function that finds the normal vector of collision of two objects (subtract centers)
 - Implement collision between balls.
-  Reference the formulas for finding the point of collision
-  between two balls, calculate the line of reflection by
-  reflecting the velocity around the tangent to that point.
+  Transfer the momentum in the direction of the normal of collision between the two colliding balls (use dot product).
+
+Optionally:
+- Implement substepping for more precise results.
+- Fix up the objects' positions by moving them in separate along the normal until they touch.
+- Prevent repetitive collision responses by only doing it if the objects' velocities point toward each other (use dot product).
 
 ### 2.2. Momentum
 
