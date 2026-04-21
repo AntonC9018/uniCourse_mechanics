@@ -93,3 +93,5 @@ Optionally:
 - Solve tunneling by doing continuous collision detection.
 
 ## 3. Newtonian physics
+
+- Add gravity

@@ -8,3 +8,6 @@
     - Uniform Grid
     - Sweep and Prune algorithm
     - KD trees and Quadtrees
+
+Resources:
+- [Sweep and prune](https://leanrada.com/notes/sweep-and-prune/)
