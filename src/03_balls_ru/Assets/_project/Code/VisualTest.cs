@@ -5,7 +5,7 @@ namespace Core
 {
     public sealed class VisualTest : MonoBehaviour
     {
-        [SerializeField] private Transform _ballPrefab = null!;
+        [SerializeField] private BallSpawner _spawner = null!;
 
         private Transform _ballTransform = null!;
         [SerializeField] private BallData _ballData = new();
@@ -27,7 +27,7 @@ namespace Core
 
         private void Start()
         {
-            _ballTransform = Instantiate(_ballPrefab);
+            _ballTransform = _spawner.SpawnBall();
         }
 
         private void Update()
@@ -65,26 +65,5 @@ namespace Core
             var ret = s01 * range + min;
             return ret;
         }
-    }
-
-    public static class BallHelper
-    {
-        public static void Apply(BallData ball, Transform ballTransform)
-        {
-            var s = ball.Radius * 2;
-            ballTransform.localScale = new(s, s, s);
-
-            var position = ballTransform.localPosition;
-            position.x = ball.Position.x;
-            position.y = ball.Position.y;
-            ballTransform.localPosition = position;
-        }
-    }
-
-    [Serializable]
-    public sealed class BallData
-    {
-        public float Radius = 1.0f;
-        public Vector2 Position;
     }
 }
