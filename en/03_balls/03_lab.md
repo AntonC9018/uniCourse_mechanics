@@ -42,8 +42,8 @@
   The simplest fix is to remember if you've passed the wall this frame,
   and check that again before changing sign.
 
-  Another OK fix is to only invert the velocity if it's already
-  going in the opposite direction.
+  Another better fix is to only invert the velocity if it's
+  going toward the outside of the scene.
   </details>
 
 ### 1.4. Add another ball
@@ -62,7 +62,7 @@
 
 Optionally:
 - Implement substepping for more precise results.
-- Fix up the objects' positions by moving them in separate along the normal until they touch.
+- Fix up the objects' positions by moving them in separate directions along the normal until they barely touch.
 - Prevent repetitive collision responses by only doing it if the objects' velocities point toward each other (use dot product).
 
 ### 2.2. Momentum
