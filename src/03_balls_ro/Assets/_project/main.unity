@@ -289,6 +289,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VisualTests.MainLogic
   _spawner: {fileID: 671345812}
   _camera: {fileID: 573517331}
+  _ball:
+    Position: {x: 0, y: 0}
+    Velocity: {x: 1.5, y: 0}
+    Radius: 1
+    Color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
