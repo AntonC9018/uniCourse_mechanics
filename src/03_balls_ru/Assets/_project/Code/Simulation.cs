@@ -52,6 +52,58 @@ namespace Core
                 }
             }
 
+            {
+                var b1 = _ballData[0];
+                var b2 = _ballData[1];
+                var p1 = b1.Position;
+                var p2 = b2.Position;
+                var d = p2 - p1;
+                var dlen = d.magnitude;
+
+                var r1 = b1.Radius;
+                var r2 = b2.Radius;
+                var r = r1 + r2;
+                if (dlen <= r)
+                {
+                    var n = d / dlen;
+
+                    ref var v1 = ref b1.Velocity;
+                    ref var v2 = ref b2.Velocity;
+
+                    var a1 = Vector2.Dot(v1, n);
+                    var a2n = Vector2.Dot(v2, n);
+
+                    bool ShouldProcessCollision()
+                    {
+                        var a2 = -a2n;
+                        if (a1 > 0 && a2 > 0)
+                        {
+                            return true;
+                        }
+                        if (a1 < 0 && a2 < 0)
+                        {
+                            return false;
+                        }
+                        if (a1 > 0)
+                        {
+                            return a1 > -a2;
+                        }
+                        // if (a2 > 0)
+                        {
+                            return a2 > -a1;
+                        }
+                    }
+                    if (ShouldProcessCollision())
+                    {
+                        var v1n = a1 * n;
+                        var v2n = a2n * n;
+
+                        v1 = v1 - v1n + v2n;
+                        v2 = v2 - v2n + v1n;
+                    }
+                }
+            }
+
             for (int i = 0; i < _ballData.Length; i++)
             {
                 var b = _ballData[i];
