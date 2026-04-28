@@ -1,4 +1,3 @@
-using System.Drawing;
 using UnityEngine;
 
 namespace Core
@@ -8,74 +7,57 @@ namespace Core
         [SerializeField] private BallSpawner _spawner = null!;
         [SerializeField] private Camera _camera = null!;
 
-        [SerializeField] private BallData _ballData = new()
+        [SerializeField] private BallData[] _ballData =
         {
-            Radius = 2.0f,
-            Velocity = new(x: 2.0f, y: 0),
+            new()
+            {
+                Radius = 2.0f,
+                Velocity = new(x: 2.0f, y: 0),
+            },
+            new()
+            {
+                Radius = 1.0f,
+                Velocity = new(x: -2.0f, y: 0),
+            },
         };
-        private Transform _ballTransform = null!;
+        private Transform[] _ballTransforms = null!;
+        private Wall[]? _walls;
 
         public void Start()
         {
-            _ballTransform = _spawner.SpawnBall();
-        }
-
-        private static bool IsBallCollidingWithWall(
-            BallData ball,
-            Vector2 wallPoint,
-            Vector2 normalTowardScene)
-        {
-            var extremity = ball.Position - ball.Radius * normalTowardScene;
-            var d = wallPoint - extremity;
-            var dot = Vector2.Dot(d, normalTowardScene);
-            if (dot >= 0)
+            _ballTransforms = new Transform[_ballData.Length];
+            for (int i = 0; i < _ballData.Length; i++)
             {
-                return true;
-            }
-            return false;
-        }
-
-        private static void HandleCollisionWithWall(
-            BallData ball,
-            Vector2 normalTowardScene)
-        {
-            var v = ball.Velocity;
-            var dot = Vector2.Dot(v, normalTowardScene);
-            if (dot < 0)
-            {
-                var vn = dot * normalTowardScene;
-                var vNew = v - 2 * vn;
-                ball.Velocity = vNew;
+                _ballTransforms[i] = _spawner.SpawnBall();
             }
         }
 
         public void Update()
         {
-            var dt = Time.deltaTime;
-            var dp = dt * _ballData.Velocity;
-            _ballData.Position += dp;
+            var walls = WallHelper.GetWalls(_camera, ref _walls);
 
-
-            var halfwidth = _camera.aspect * _camera.orthographicSize;
-            var halfheight = _camera.orthographicSize;
-
-            (Vector2 Point, Vector2 NormalTowardScene)[] walls =
+            for (int i = 0; i < _ballData.Length; i++)
             {
-                (new(halfwidth, 0), new(-1, 0)),
-                (new(-halfwidth, 0), new(1, 0)),
-                (new(0, halfheight), new(0, -1)),
-                (new(0, -halfheight), new(0, 1)),
-                (new(halfwidth / 2, halfheight), new Vector2(-1, -1).normalized),
-            };
-            foreach (var w in walls)
-            {
-                if (IsBallCollidingWithWall(_ballData, w.Point, w.NormalTowardScene))
+                var b = _ballData[i];
+
+                UpdatePosition();
+                WallHelper.HandleCollisionWithWalls(b, walls);
+                continue;
+
+                void UpdatePosition()
                 {
-                    HandleCollisionWithWall(_ballData, w.NormalTowardScene);
+                    var dt = Time.deltaTime;
+                    var dp = dt * b.Velocity;
+                    b.Position += dp;
                 }
             }
 
-            BallHelper.Apply(_ballData, _ballTransform);
+            for (int i = 0; i < _ballData.Length; i++)
+            {
+                var b = _ballData[i];
+                var t = _ballTransforms[i];
+                BallHelper.Apply(b, t);
+            }
         }
     }
 }

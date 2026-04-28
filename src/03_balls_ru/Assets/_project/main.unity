@@ -309,9 +309,12 @@ MonoBehaviour:
   _spawner: {fileID: 992335971}
   _camera: {fileID: 540640014}
   _ballData:
-    Radius: 2
-    Position: {x: 0, y: 0}
-    Velocity: {x: 0, y: 0}
+  - Radius: 2
+    Position: {x: -1.22, y: 0}
+    Velocity: {x: 2, y: 0}
+  - Radius: 1
+    Position: {x: 2.43, y: 0}
+    Velocity: {x: -2, y: 0}
 --- !u!114 &992335971
 MonoBehaviour:
   m_ObjectHideFlags: 0
