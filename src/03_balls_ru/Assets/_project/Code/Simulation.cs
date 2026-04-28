@@ -55,15 +55,15 @@ namespace Core
             {
                 var b1 = _ballData[0];
                 var b2 = _ballData[1];
-                var p1 = b1.Position;
-                var p2 = b2.Position;
+                ref var p1 = ref b1.Position;
+                ref var p2 = ref b2.Position;
                 var d = p2 - p1;
                 var dlen = d.magnitude;
 
                 var r1 = b1.Radius;
                 var r2 = b2.Radius;
-                var r = r1 + r2;
-                if (dlen <= r)
+                var rsum = r1 + r2;
+                if (dlen <= rsum)
                 {
                     var n = d / dlen;
 
@@ -73,8 +73,26 @@ namespace Core
                     var a1 = Vector2.Dot(v1, n);
                     var a2n = Vector2.Dot(v2, n);
 
+                    if (ShouldProcessCollision())
+                    {
+                        var v1n = a1 * n;
+                        var v2n = a2n * n;
+
+                        v1 = v1 - v1n + v2n;
+                        v2 = v2 - v2n + v1n;
+
+                        // Move out of collision
+                        var x = rsum - dlen;
+                        var c1 = r1 / rsum;
+                        var c2 = r2 / rsum;
+                        p1 = p1 - c1 * x * n;
+                        p2 = p2 + c2 * x * n;
+                    }
+
                     bool ShouldProcessCollision()
                     {
+                        return true;
+                        #if false
                         var a2 = -a2n;
                         if (a1 > 0 && a2 > 0)
                         {
@@ -92,14 +110,7 @@ namespace Core
                         {
                             return a2 > -a1;
                         }
-                    }
-                    if (ShouldProcessCollision())
-                    {
-                        var v1n = a1 * n;
-                        var v2n = a2n * n;
-
-                        v1 = v1 - v1n + v2n;
-                        v2 = v2 - v2n + v1n;
+                        #endif
                     }
                 }
             }
