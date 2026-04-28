@@ -1,3 +1,4 @@
+using System.Drawing;
 using UnityEngine;
 
 namespace Core
@@ -19,66 +20,58 @@ namespace Core
             _ballTransform = _spawner.SpawnBall();
         }
 
+        private static bool IsBallCollidingWithWall(
+            BallData ball,
+            Vector2 wallPoint,
+            Vector2 normalTowardScene)
+        {
+            var extremity = ball.Position - ball.Radius * normalTowardScene;
+            var d = wallPoint - extremity;
+            var dot = Vector2.Dot(d, normalTowardScene);
+            if (dot >= 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static void HandleCollisionWithWall(
+            BallData ball,
+            Vector2 normalTowardScene)
+        {
+            var v = ball.Velocity;
+            var dot = Vector2.Dot(v, normalTowardScene);
+            if (dot < 0)
+            {
+                var vn = dot * normalTowardScene;
+                var vNew = v - 2 * vn;
+                ball.Velocity = vNew;
+            }
+        }
+
         public void Update()
         {
             var dt = Time.deltaTime;
             var dp = dt * _ballData.Velocity;
             _ballData.Position += dp;
 
-            {
-                var extremity = _ballData.Position;
-                extremity.x += _ballData.Radius;
 
-                float rightWallX = _camera.aspect * _camera.orthographicSize;
-                if (extremity.x > rightWallX)
-                {
-                    ref var vx = ref _ballData.Velocity.x;
-                    if (vx > 0)
-                    {
-                        vx = -vx;
-                    }
-                }
-            }
-            {
-                var extremity = _ballData.Position;
-                extremity.x -= _ballData.Radius;
+            var halfwidth = _camera.aspect * _camera.orthographicSize;
+            var halfheight = _camera.orthographicSize;
 
-                float leftWallX = -_camera.aspect * _camera.orthographicSize;
-                if (extremity.x < leftWallX)
-                {
-                    ref var vx = ref _ballData.Velocity.x;
-                    if (vx < 0)
-                    {
-                        vx = -vx;
-                    }
-                }
-            }
+            (Vector2 Point, Vector2 NormalTowardScene)[] walls =
             {
-                var extremity = _ballData.Position;
-                extremity.y += _ballData.Radius;
-
-                float topWallY = _camera.orthographicSize;
-                if (extremity.y > topWallY)
-                {
-                    ref var vy = ref _ballData.Velocity.y;
-                    if (vy > 0)
-                    {
-                        vy = -vy;
-                    }
-                }
-            }
+                (new(halfwidth, 0), new(-1, 0)),
+                (new(-halfwidth, 0), new(1, 0)),
+                (new(0, halfheight), new(0, -1)),
+                (new(0, -halfheight), new(0, 1)),
+                (new(halfwidth / 2, halfheight), new Vector2(-1, -1).normalized),
+            };
+            foreach (var w in walls)
             {
-                var extremity = _ballData.Position;
-                extremity.y -= _ballData.Radius;
-
-                float topWallY = -_camera.orthographicSize;
-                if (extremity.y < topWallY)
+                if (IsBallCollidingWithWall(_ballData, w.Point, w.NormalTowardScene))
                 {
-                    ref var vy = ref _ballData.Velocity.y;
-                    if (vy < 0)
-                    {
-                        vy = -vy;
-                    }
+                    HandleCollisionWithWall(_ballData, w.NormalTowardScene);
                 }
             }
 
