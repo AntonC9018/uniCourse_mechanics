@@ -6,6 +6,7 @@ namespace Core
     [Serializable]
     public sealed class BallData
     {
+        public float Mass = 1.0f;
         public float Radius = 1.0f;
         public Vector2 Position;
         public Vector2 Velocity;

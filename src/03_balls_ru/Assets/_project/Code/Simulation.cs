@@ -75,18 +75,25 @@ namespace Core
 
                     if (ShouldProcessCollision())
                     {
-                        var v1n = a1 * n;
-                        var v2n = a2n * n;
+                        {
+                            var m1 = b1.Mass;
+                            var m2 = b2.Mass;
+                            var ms = m1 + m2;
+                            var centerV = (m1 * a1 + m2 * a2n) / ms;
+                            var v1New = -a1 + 2 * centerV;
+                            var v2New = -a2n + 2 * centerV;
+                            v1 = v1 + (-a1 + v1New) * n;
+                            v2 = v2 + (-a2n + v2New) * n;
+                        }
 
-                        v1 = v1 - v1n + v2n;
-                        v2 = v2 - v2n + v1n;
-
-                        // Move out of collision
-                        var x = rsum - dlen;
-                        var c1 = r1 / rsum;
-                        var c2 = r2 / rsum;
-                        p1 = p1 - c1 * x * n;
-                        p2 = p2 + c2 * x * n;
+                        {
+                            // Move out of collision
+                            var x = rsum - dlen;
+                            var c1 = r1 / rsum;
+                            var c2 = r2 / rsum;
+                            p1 = p1 - c1 * x * n;
+                            p2 = p2 + c2 * x * n;
+                        }
                     }
 
                     bool ShouldProcessCollision()
