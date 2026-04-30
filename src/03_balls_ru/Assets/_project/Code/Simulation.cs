@@ -45,6 +45,12 @@ namespace Core
         public void Start()
         {
             _ballData = new BallData[_ballCount];
+            _spatialDict = new(_ballCount);
+            _listPool = new List<int>[_ballCount];
+            for (int i = 0; i < _listPool.Length; i++)
+            {
+                _listPool[i] = new();
+            }
 
             if (MaxMass < MinMass)
             {
@@ -110,6 +116,9 @@ namespace Core
             }
         }
 
+        private Dictionary<Vector2Int, List<int>> _spatialDict = null!;
+        private List<int>[] _listPool = null!;
+
         public void Update()
         {
             var walls = WallHelper.GetWalls(_camera, ref _walls);
@@ -161,17 +170,20 @@ namespace Core
                     return ret;
                 }
 
-                Dictionary<Vector2Int, List<int>> uniformGrid = new(_ballData.Length);
+                _spatialDict.Clear();
 
+                int listIndex = 0;
                 for (int i = 0; i < _ballData.Length; i++)
                 {
                     var b = _ballData[i];
                     var positionInWorldSpace = b.Position;
                     var gridPos = WorldToGrid(positionInWorldSpace);
-                    if (!uniformGrid.TryGetValue(gridPos, out var list))
+                    if (!_spatialDict.TryGetValue(gridPos, out var list))
                     {
-                        list = new();
-                        uniformGrid.Add(gridPos, list);
+                        list = _listPool[listIndex];
+                        list.Clear();
+                        
+                        _spatialDict.Add(gridPos, list);
                     }
 
                     list.Add(i);
@@ -195,7 +207,7 @@ namespace Core
                     Self();
                     void Self()
                     {
-                        if (!uniformGrid.TryGetValue(gridPos, out var list))
+                        if (!_spatialDict.TryGetValue(gridPos, out var list))
                         {
                             return;
                         }
@@ -215,7 +227,7 @@ namespace Core
                         foreach (var offset in neighborOffsets)
                         {
                             var gridPos2 = gridPos + offset;
-                            if (!uniformGrid.TryGetValue(gridPos2, out var list))
+                            if (!_spatialDict.TryGetValue(gridPos2, out var list))
                             {
                                 continue;
                             }
