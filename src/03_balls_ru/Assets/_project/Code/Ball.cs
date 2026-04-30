@@ -10,6 +10,7 @@ namespace Core
         public float Radius = 1.0f;
         public Vector2 Position;
         public Vector2 Velocity;
+        public Color Color = UnityEngine.Color.white;
     }
 
     public static class BallHelper
@@ -23,6 +24,8 @@ namespace Core
             position.x = ball.Position.x;
             position.y = ball.Position.y;
             ballTransform.localPosition = position;
+
+            ballTransform.gameObject.GetComponent<SpriteRenderer>().color = ball.Color;
         }
     }
 }
