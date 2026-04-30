@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 
@@ -128,57 +130,208 @@ namespace Core
                 }
             }
 
-            for (int i1 = 0; i1 < _ballData.Length - 1; i1++)
+            float GetMaxRadius()
             {
-                for (int i2 = i1 + 1; i2 < _ballData.Length; i2++)
+                float maxRadius = _ballData[0].Radius;
+                for (int i = 1; i < _ballData.Length; i++)
                 {
-                    var b1 = _ballData[i1];
-                    var b2 = _ballData[i2];
-                    ref var p1 = ref b1.Position;
-                    ref var p2 = ref b2.Position;
-                    var d = p2 - p1;
-                    var dlen = d.magnitude;
-
-                    var r1 = b1.Radius;
-                    var r2 = b2.Radius;
-                    var rsum = r1 + r2;
-                    if (dlen <= rsum)
+                    var r = _ballData[i].Radius;
+                    if (r > maxRadius)
                     {
-                        var n = d / dlen;
+                        maxRadius = r;
+                    }
+                }
+                return maxRadius;
+            }
 
-                        ref var v1 = ref b1.Velocity;
-                        ref var v2 = ref b2.Velocity;
+            {
+                var cellSize = GetMaxRadius() * 2;
+                var sy = _camera.orthographicSize * 2;
+                var sx = _camera.aspect * sy;
+                var s = new Vector2(sx, sy);
+                int CellCount(float component) => Mathf.CeilToInt(component / cellSize);
+                var mx = CellCount(sx);
+                var my = CellCount(sy);
 
-                        var a1 = Vector2.Dot(v1, n);
-                        var a2n = Vector2.Dot(v2, n);
+                Vector2Int WorldToGrid(Vector2 w)
+                {
+                    var t = (w + s / 2);
+                    t.x /= cellSize;
+                    t.y /= cellSize;
+                    var ret = new Vector2Int(
+                        x: Mathf.FloorToInt(t.x),
+                        y: Mathf.FloorToInt(t.y));
+                    return ret;
+                }
 
-                        if (ShouldProcessCollision())
+                List<int>?[][] uniformGrid = new List<int>?[my][];
+                for (int rowIndex = 0; rowIndex < my; rowIndex++)
+                {
+                    uniformGrid[rowIndex] = new List<int>?[mx];
+                }
+
+                for (int i = 0; i < _ballData.Length; i++)
+                {
+                    var b = _ballData[i];
+                    var positionInWorldSpace = b.Position;
+                    var gridPos = WorldToGrid(positionInWorldSpace);
+
+                    if (gridPos.y < 0 || gridPos.y >= my)
+                    {
+                        continue;
+                    }
+                    if (gridPos.x < 0 || gridPos.x >= mx)
+                    {
+                        continue;
+                    }
+                    var row = uniformGrid[gridPos.y];
+                    ref var list = ref row[gridPos.x];
+                    if (list == null)
+                    {
+                        list = new();
+                    }
+
+                    list.Add(i);
+                }
+
+                ReadOnlySpan<Vector2Int> neighborOffsets = stackalloc Vector2Int[4]
+                {
+                    new(x: 1, y: 1),
+                    new(x: 1, y: 0),
+                    new(x: 1, y: -1),
+                    new(x: 0, y: -1),
+                };
+
+                for (int i1 = 0; i1 < _ballData.Length; i1++)
+                {
+                    var ball1 = _ballData[i1];
+                    var positionInWorldSpace = ball1.Position;
+                    var gridPos = WorldToGrid(positionInWorldSpace);
+                    if (gridPos.y < 0 || gridPos.y >= my)
+                    {
+                        continue;
+                    }
+                    if (gridPos.x < 0 || gridPos.x >= mx)
+                    {
+                        continue;
+                    }
+
+                    // Своя клетка + id
+                    Self();
+                    void Self()
+                    {
+                        var row = uniformGrid[gridPos.y];
+                        var list = row[gridPos.x];
+                        if (list == null)
                         {
+                            return;
+                        }
+                        foreach (var i2 in list)
+                        {
+                            if (i1 >= i2)
                             {
-                                var m1 = b1.Mass;
-                                var m2 = b2.Mass;
-                                var ms = m1 + m2;
-                                var centerV = (m1 * a1 + m2 * a2n) / ms;
-                                var v1New = -a1 + 2 * centerV;
-                                var v2New = -a2n + 2 * centerV;
-                                v1 = v1 + (-a1 + v1New) * n;
-                                v2 = v2 + (-a2n + v2New) * n;
+                                continue;
                             }
 
+                            ProcessPotentialCollision(i1, i2);
+                        }
+                    }
+
+                    // Соседние клетки
+                    {
+                        foreach (var offset in neighborOffsets)
+                        {
+                            var gridPos2 = gridPos + offset;
+                            if (gridPos2.y < 0)
                             {
-                                // Move out of collision
-                                var x = rsum - dlen;
-                                var c1 = r1 / rsum;
-                                var c2 = r2 / rsum;
-                                p1 = p1 - c1 * x * n;
-                                p2 = p2 + c2 * x * n;
+                                continue;
+                            }
+                            if (gridPos2.y >= my)
+                            {
+                                continue;
+                            }
+                            if (gridPos2.x >= mx)
+                            {
+                                continue;
+                            }
+                            var row = uniformGrid[gridPos2.y];
+                            var list = row[gridPos2.x];
+                            if (list == null)
+                            {
+                                continue;
+                            }
+
+                            foreach (var i2 in list)
+                            {
+                                ProcessPotentialCollision(i1, i2);
                             }
                         }
+                    }
+                }
+            }
 
-                        bool ShouldProcessCollision()
-                        {
-                            return true;
-                            #if false
+            for (int i = 0; i < _ballData.Length; i++)
+            {
+                var b = _ballData[i];
+                var t = _ballTransforms[i];
+                BallHelper.Apply(b, t);
+            }
+        }
+
+        private void ProcessPotentialCollision(int i1, int i2)
+        {
+            var b1 = _ballData[i1];
+            var b2 = _ballData[i2];
+            ref var p1 = ref b1.Position;
+            ref var p2 = ref b2.Position;
+            var d = p2 - p1;
+            var dlen = d.magnitude;
+            if (dlen == 0)
+            {
+                d = new(1, 0);
+                dlen = 1;
+            }
+
+            var r1 = b1.Radius;
+            var r2 = b2.Radius;
+            var rsum = r1 + r2;
+            if (dlen <= rsum)
+            {
+                var n = d / dlen;
+
+                ref var v1 = ref b1.Velocity;
+                ref var v2 = ref b2.Velocity;
+
+                var a1 = Vector2.Dot(v1, n);
+                var a2n = Vector2.Dot(v2, n);
+
+                if (ShouldProcessCollision())
+                {
+                    {
+                        var m1 = b1.Mass;
+                        var m2 = b2.Mass;
+                        var ms = m1 + m2;
+                        var centerV = (m1 * a1 + m2 * a2n) / ms;
+                        var v1New = -a1 + 2 * centerV;
+                        var v2New = -a2n + 2 * centerV;
+                        v1 = v1 + (-a1 + v1New) * n;
+                        v2 = v2 + (-a2n + v2New) * n;
+                    }
+
+                    {
+                        // Move out of collision
+                        var x = rsum - dlen;
+                        var c1 = r1 / rsum;
+                        var c2 = r2 / rsum;
+                        p1 = p1 - c1 * x * n;
+                        p2 = p2 + c2 * x * n;
+                    }
+                }
+
+                bool ShouldProcessCollision()
+                {
+                    return true;
+#if false
                             var a2 = -a2n;
                             if (a1 > 0 && a2 > 0)
                             {
@@ -196,17 +349,8 @@ namespace Core
                             {
                                 return a2 > -a1;
                             }
-                            #endif
-                        }
-                    }
+#endif
                 }
-            }
-
-            for (int i = 0; i < _ballData.Length; i++)
-            {
-                var b = _ballData[i];
-                var t = _ballTransforms[i];
-                BallHelper.Apply(b, t);
             }
         }
     }
