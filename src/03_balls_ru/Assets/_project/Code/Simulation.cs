@@ -149,9 +149,6 @@ namespace Core
                 var sy = _camera.orthographicSize * 2;
                 var sx = _camera.aspect * sy;
                 var s = new Vector2(sx, sy);
-                int CellCount(float component) => Mathf.CeilToInt(component / cellSize);
-                var mx = CellCount(sx);
-                var my = CellCount(sy);
 
                 Vector2Int WorldToGrid(Vector2 w)
                 {
@@ -164,31 +161,17 @@ namespace Core
                     return ret;
                 }
 
-                List<int>?[][] uniformGrid = new List<int>?[my][];
-                for (int rowIndex = 0; rowIndex < my; rowIndex++)
-                {
-                    uniformGrid[rowIndex] = new List<int>?[mx];
-                }
+                Dictionary<Vector2Int, List<int>> uniformGrid = new(_ballData.Length);
 
                 for (int i = 0; i < _ballData.Length; i++)
                 {
                     var b = _ballData[i];
                     var positionInWorldSpace = b.Position;
                     var gridPos = WorldToGrid(positionInWorldSpace);
-
-                    if (gridPos.y < 0 || gridPos.y >= my)
-                    {
-                        continue;
-                    }
-                    if (gridPos.x < 0 || gridPos.x >= mx)
-                    {
-                        continue;
-                    }
-                    var row = uniformGrid[gridPos.y];
-                    ref var list = ref row[gridPos.x];
-                    if (list == null)
+                    if (!uniformGrid.TryGetValue(gridPos, out var list))
                     {
                         list = new();
+                        uniformGrid.Add(gridPos, list);
                     }
 
                     list.Add(i);
@@ -207,22 +190,12 @@ namespace Core
                     var ball1 = _ballData[i1];
                     var positionInWorldSpace = ball1.Position;
                     var gridPos = WorldToGrid(positionInWorldSpace);
-                    if (gridPos.y < 0 || gridPos.y >= my)
-                    {
-                        continue;
-                    }
-                    if (gridPos.x < 0 || gridPos.x >= mx)
-                    {
-                        continue;
-                    }
 
                     // Своя клетка + id
                     Self();
                     void Self()
                     {
-                        var row = uniformGrid[gridPos.y];
-                        var list = row[gridPos.x];
-                        if (list == null)
+                        if (!uniformGrid.TryGetValue(gridPos, out var list))
                         {
                             return;
                         }
@@ -242,25 +215,10 @@ namespace Core
                         foreach (var offset in neighborOffsets)
                         {
                             var gridPos2 = gridPos + offset;
-                            if (gridPos2.y < 0)
+                            if (!uniformGrid.TryGetValue(gridPos2, out var list))
                             {
                                 continue;
                             }
-                            if (gridPos2.y >= my)
-                            {
-                                continue;
-                            }
-                            if (gridPos2.x >= mx)
-                            {
-                                continue;
-                            }
-                            var row = uniformGrid[gridPos2.y];
-                            var list = row[gridPos2.x];
-                            if (list == null)
-                            {
-                                continue;
-                            }
-
                             foreach (var i2 in list)
                             {
                                 ProcessPotentialCollision(i1, i2);
