@@ -10,18 +10,74 @@ namespace VisualTests
         [SerializeField] private BallSpawner _spawner = null!;
         [SerializeField] private Camera _camera = null!;
 
-        [SerializeField] private Ball _ball = new()
+        [SerializeField] private Ball[] _balls =
         {
-            Color = Color.white,
-            Radius = 1,
-            Velocity = new Vector2(1.5f, 0),
+            new()
+            {
+                Color = Color.white,
+                Radius = 1,
+                Velocity = new Vector2(1.5f, 0),
+            },
+            new()
+            {
+                Color = Color.red,
+                Radius = 2,
+                Velocity = new Vector2(-1.5f, 0),
+                Position = new Vector2(2, 0),
+            },
         };
 
-        private Transform _ballTransform = null!;
+        private Transform[] _ballTransforms = null!;
 
         private void Start()
         {
-            _ballTransform = _spawner.SpawnBall();
+            _ballTransforms = new Transform[_balls.Length];
+            for (int i = 0; i < _balls.Length; i++)
+            {
+                _ballTransforms[i] = _spawner.SpawnBall();
+            }
+        }
+
+        private void Update()
+        {
+            for (int i = 0; i < _balls.Length; i++)
+            {
+                var ball = _balls[i];
+                BallHelper.ApplyMovement(ball, Time.deltaTime);
+            }
+
+            HandleWallCollisions();
+
+            for (int i = 0; i < _balls.Length; i++)
+            {
+                var ball = _balls[i];
+                BallHelper.Apply(new(ball, _ballTransforms[i]));
+            }
+        }
+
+        private void HandleWallCollisions()
+        {
+            var height = _camera.orthographicSize * 2;
+            var width = _camera.aspect * height;
+            ReadOnlySpan<Wall> walls = stackalloc Wall[4]
+            {
+                new(Point: new(-width / 2, height / 2), NormalTowardScene: new(1, 0)),
+                new(Point: new(-width / 2, height / 2), NormalTowardScene: new(0, -1)),
+                new(Point: new(width / 2, -height / 2), NormalTowardScene: new(-1, 0)),
+                new(Point: new(width / 2, -height / 2), NormalTowardScene: new(0, 1)),
+            };
+
+            for (int i = 0; i < _balls.Length; i++)
+            {
+                var ball = _balls[i];
+                foreach (var w in walls)
+                {
+                    if (IsBallCollidingWithWall(ball, w.Point, w.NormalTowardScene))
+                    {
+                        ResolveCollisionBallWall(ball, w.NormalTowardScene);
+                    }
+                }
+            }
         }
 
         private static bool IsBallCollidingWithWall(
@@ -55,30 +111,9 @@ namespace VisualTests
             ball.Velocity -= 2 * velocityTowardScene;
         }
 
-        private void Update()
-        {
-            BallHelper.ApplyMovement(_ball, Time.deltaTime);
-
-            var height = _camera.orthographicSize * 2;
-            var width = _camera.aspect * height;
-            (Vector2 Point, Vector2 NormalTowardScene)[] walls =
-            {
-                (Point: new(-width / 2, height / 2), NormalTowardScene: new(1, 0)),
-                (Point: new(-width / 2, height / 2), NormalTowardScene: new(0, -1)),
-                (Point: new(width / 2, -height / 2), NormalTowardScene: new(-1, 0)),
-                (Point: new(width / 2, -height / 2), NormalTowardScene: new(0, 1)),
-                (Point: new(0, height / 2), NormalTowardScene: new Vector2(-1, -1).normalized),
-            };
-
-            foreach (var w in walls)
-            {
-                if (IsBallCollidingWithWall(_ball, w.Point, w.NormalTowardScene))
-                {
-                    ResolveCollisionBallWall(_ball, w.NormalTowardScene);
-                }
-            }
-
-            BallHelper.Apply(new(_ball, _ballTransform));
-        }
     }
+
+    public readonly record struct Wall(
+        Vector2 Point,
+        Vector2 NormalTowardScene);
 }
