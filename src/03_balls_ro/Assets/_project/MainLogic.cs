@@ -48,6 +48,44 @@ namespace VisualTests
 
             HandleWallCollisions();
 
+            {
+                var b1 = _balls[0];
+                var b2 = _balls[1];
+                ref var p1 = ref b1.Position;
+                ref var p2 = ref b2.Position;
+                var d = p2 - p1;
+                var dlen = d.magnitude;
+                var r1 = b1.Radius;
+                var r2 = b2.Radius;
+                var rsum = r1 + r2;
+                var overlap = rsum - dlen;
+                if (overlap >= 0)
+                {
+                    ref var v1 = ref b1.Velocity;
+                    ref var v2 = ref b2.Velocity;
+                    var n = d / dlen;
+
+                    var a1 = Vector2.Dot(v1, n);
+                    var a2 = -Vector2.Dot(v2, n);
+                    // if (a1 + a2 > 0)
+                    {
+                        var v1n = a1 * n;
+                        var v2n = -a2 * n;
+                        v1 = v1 - v1n + v2n;
+                        v2 = v2 - v2n + v1n;
+                    }
+
+                    {
+                        var portion1 = r1 / rsum;
+                        var portion2 = 1 - portion1;
+                        var d1 = portion1 * overlap * -n;
+                        var d2 = portion2 * overlap * n;
+                        p1 += d1;
+                        p2 += d2;
+                    }
+                }
+            }
+
             for (int i = 0; i < _balls.Length; i++)
             {
                 var ball = _balls[i];
@@ -107,8 +145,11 @@ namespace VisualTests
             // 3. o scadem inca o data (pentru a o reflecta)
 
             float speedTowardWall = -Vector2.Dot(ball.Velocity, wallNormalTowardScene);
-            Vector2 velocityTowardScene = speedTowardWall * -wallNormalTowardScene;
-            ball.Velocity -= 2 * velocityTowardScene;
+            if (speedTowardWall > 0)
+            {
+                Vector2 velocityTowardScene = speedTowardWall * -wallNormalTowardScene;
+                ball.Velocity -= 2 * velocityTowardScene;
+            }
         }
 
     }
