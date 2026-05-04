@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 
 namespace VisualTests
 {
+    [Serializable]
     public sealed class Ball
     {
         public Vector2 Position;
@@ -22,7 +24,7 @@ namespace VisualTests
             pos.z = b.TransformInWorld.position.z;
             b.TransformInWorld.position = pos;
 
-            var scale = b.Ball.Radius;
+            var scale = b.Ball.Radius * 2;
             var scaleVector = new Vector3(scale, scale, scale);
             b.TransformInWorld.localScale = scaleVector;
 
